@@ -1,0 +1,8 @@
+
+
+
+## Building the container
+
+```bash
+docker compose up --build
+```
