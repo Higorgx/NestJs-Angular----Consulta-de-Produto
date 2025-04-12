@@ -1,4 +1,3 @@
-// common/dto/paginated-response.dto.ts
 import { ApiProperty } from '@nestjs/swagger';
 import { BaseResponseDto } from './base-response.dto';
 

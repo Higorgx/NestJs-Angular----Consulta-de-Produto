@@ -1,16 +1,16 @@
 import { Injectable } from '@nestjs/common';
-import { RequestProductDto } from './dto/request-product.dto';
+import { RequestProdutoDto } from './dto/request-produto.dto';
 import { PaginationDto } from './dto/pagination.dto';
-import { ProductsRepository } from './products.repository';
-import { ResponseProductDTO } from './dto/response-product.dto';
+import { ProdutosRepository } from './produtos.repository';
+import { ResponseProdutoDTO } from './dto/response-produto.dto';
 import { BaseResponseDto } from '../common/dto/base-response.dto';
 import { PaginatedResponseDto } from '../common/dto/paginated-response.dto';
-import { ProductEntity } from './entities/product.entity';
+import { Produto } from './entities/produto.entity';
 import { PaginationResult } from 'src/common/interfaces/pagination-result.interface';
 
 @Injectable()
-export class ProductsService {
-  constructor(private readonly productsRepository: ProductsRepository) {}
+export class ProdutosService {
+  constructor(private readonly produtosRepository: ProdutosRepository) {}
 
   private isErrorWithMessage(error: unknown): error is { message: string } {
     return typeof error === 'object' && error !== null && 'message' in error;
@@ -23,11 +23,11 @@ export class ProductsService {
     return 'Erro desconhecido';
   }
 
-  private toResponseDto(product: ProductEntity): ResponseProductDTO {
+  private toResponseDto(produto: Produto): ResponseProdutoDTO {
     return {
-      id: product.id,
-      descricao: product.descricao,
-      custo: product.custo,
+      id: produto.id,
+      descricao: produto.descricao,
+      custo: produto.custo,
     };
   }
 
@@ -47,33 +47,33 @@ export class ProductsService {
   }
 
   async create(
-    requestProductDto: RequestProductDto,
-  ): Promise<BaseResponseDto<ResponseProductDTO>> {
+    requestProdutoDto: RequestProdutoDto,
+  ): Promise<BaseResponseDto<ResponseProdutoDTO>> {
     try {
-      const { imagem, ...rest } = requestProductDto;
+      const { imagem, ...rest } = requestProdutoDto;
 
       if (imagem && !this.isValidImageType(imagem)) {
-        return new BaseResponseDto<ResponseProductDTO>({
+        return new BaseResponseDto<ResponseProdutoDTO>({
           success: false,
           message:
             'Imagem inválida. Apenas formatos .png e .jpg são permitidos.',
         });
       }
 
-      const productData: Partial<ProductEntity> = {
+      const produtoData: Partial<Produto> = {
         ...rest,
         imagem: imagem ? this.base64ToBuffer(imagem) : undefined,
       };
 
-      const product = await this.productsRepository.create(productData);
+      const produto = await this.produtosRepository.create(produtoData);
 
-      return new BaseResponseDto<ResponseProductDTO>({
+      return new BaseResponseDto<ResponseProdutoDTO>({
         success: true,
-        data: this.toResponseDto(product),
+        data: this.toResponseDto(produto),
         message: 'Produto criado com sucesso',
       });
     } catch (error) {
-      return new BaseResponseDto<ResponseProductDTO>({
+      return new BaseResponseDto<ResponseProdutoDTO>({
         success: false,
         message: 'Erro ao criar produto',
         errors: [this.getErrorMessage(error)],
@@ -89,26 +89,26 @@ export class ProductsService {
       custoMin?: number;
       custoMax?: number;
     },
-  ): Promise<PaginatedResponseDto<ResponseProductDTO>> {
+  ): Promise<PaginatedResponseDto<ResponseProdutoDTO>> {
     try {
       const { limit = 10, page = 1 } = paginationDto || {};
-      const paginatedResult = (await this.productsRepository.findAllPaginated(
+      const paginatedResult = (await this.produtosRepository.findAllPaginated(
         page,
         limit,
         filters,
-      )) as PaginationResult<ProductEntity>;
+      )) as PaginationResult<Produto>;
 
       const { data, total, page: currentPage, lastPage } = paginatedResult;
 
-      return new PaginatedResponseDto<ResponseProductDTO>({
+      return new PaginatedResponseDto<ResponseProdutoDTO>({
         success: true,
-        data: data.map((product) => this.toResponseDto(product)),
+        data: data.map((produto) => this.toResponseDto(produto)),
         total,
         page: currentPage,
         lastPage,
       });
     } catch (error) {
-      return new PaginatedResponseDto<ResponseProductDTO>({
+      return new PaginatedResponseDto<ResponseProdutoDTO>({
         success: false,
         message: 'Erro ao buscar produtos',
         errors: [this.getErrorMessage(error)],
@@ -116,21 +116,21 @@ export class ProductsService {
     }
   }
 
-  async findOne(id: number): Promise<BaseResponseDto<ResponseProductDTO>> {
+  async findOne(id: number): Promise<BaseResponseDto<ResponseProdutoDTO>> {
     try {
-      const product = await this.productsRepository.findById(id);
-      if (!product) {
-        return new BaseResponseDto<ResponseProductDTO>({
+      const produto = await this.produtosRepository.findById(id);
+      if (!produto) {
+        return new BaseResponseDto<ResponseProdutoDTO>({
           success: false,
           message: 'Produto não encontrado',
         });
       }
-      return new BaseResponseDto<ResponseProductDTO>({
+      return new BaseResponseDto<ResponseProdutoDTO>({
         success: true,
-        data: this.toResponseDto(product),
+        data: this.toResponseDto(produto),
       });
     } catch (error) {
-      return new BaseResponseDto<ResponseProductDTO>({
+      return new BaseResponseDto<ResponseProdutoDTO>({
         success: false,
         message: 'Erro ao buscar produto',
         errors: [this.getErrorMessage(error)],
@@ -140,40 +140,40 @@ export class ProductsService {
 
   async update(
     id: number,
-    updateProductDto: Partial<RequestProductDto>,
-  ): Promise<BaseResponseDto<ResponseProductDTO>> {
+    updateProdutoDto: Partial<RequestProdutoDto>,
+  ): Promise<BaseResponseDto<ResponseProdutoDTO>> {
     try {
-      const { imagem, ...rest } = updateProductDto;
+      const { imagem, ...rest } = updateProdutoDto;
 
       if (imagem && !this.isValidImageType(imagem)) {
-        return new BaseResponseDto<ResponseProductDTO>({
+        return new BaseResponseDto<ResponseProdutoDTO>({
           success: false,
           message:
             'Imagem inválida. Apenas formatos .png e .jpg são permitidos.',
         });
       }
 
-      const productData: Partial<ProductEntity> = {
+      const produtoData: Partial<Produto> = {
         ...rest,
         imagem: imagem ? this.base64ToBuffer(imagem) : undefined,
       };
 
-      const product = await this.productsRepository.update(id, productData);
+      const produto = await this.produtosRepository.update(id, produtoData);
 
-      if (!product) {
-        return new BaseResponseDto<ResponseProductDTO>({
+      if (!produto) {
+        return new BaseResponseDto<ResponseProdutoDTO>({
           success: false,
           message: 'Produto não encontrado',
         });
       }
 
-      return new BaseResponseDto<ResponseProductDTO>({
+      return new BaseResponseDto<ResponseProdutoDTO>({
         success: true,
-        data: this.toResponseDto(product),
+        data: this.toResponseDto(produto),
         message: 'Produto atualizado com sucesso',
       });
     } catch (error) {
-      return new BaseResponseDto<ResponseProductDTO>({
+      return new BaseResponseDto<ResponseProdutoDTO>({
         success: false,
         message: 'Erro ao atualizar produto',
         errors: [this.getErrorMessage(error)],
@@ -183,7 +183,7 @@ export class ProductsService {
 
   async remove(id: number): Promise<BaseResponseDto<void>> {
     try {
-      await this.productsRepository.delete(id);
+      await this.produtosRepository.delete(id);
       return new BaseResponseDto<void>({
         success: true,
         message: 'Produto removido com sucesso',

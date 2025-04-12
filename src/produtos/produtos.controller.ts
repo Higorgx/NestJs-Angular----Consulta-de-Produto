@@ -8,8 +8,8 @@ import {
   Delete,
   Query,
 } from '@nestjs/common';
-import { ProductsService } from './products.service';
-import { RequestProductDto } from './dto/request-product.dto';
+import { ProdutosService } from './produtos.service';
+import { RequestProdutoDto } from './dto/request-produto.dto';
 import { PaginationDto } from './dto/pagination.dto';
 import {
   ApiTags,
@@ -21,13 +21,15 @@ import {
   ApiOkResponse,
   ApiBadRequestResponse,
   ApiNotFoundResponse,
+  getSchemaPath,
+  ApiExtraModels,
 } from '@nestjs/swagger';
+import { ResponseProdutoDTO } from './dto/response-produto.dto';
 
-//TODO CRIAÇÂO DE PRODUTO nAO TA VINDO CAMPO IMAGEM ADICIONAR VALIDAÇÂO DE  TIPO DE IMAGEM
 @ApiTags('produtos')
-@Controller('products')
-export class ProductsController {
-  constructor(private readonly productsService: ProductsService) {}
+@Controller('produtos')
+export class ProdutosController {
+  constructor(private readonly produtosService: ProdutosService) {}
   //Cria um novo produto
   @Post()
   @ApiOperation({
@@ -36,13 +38,13 @@ export class ProductsController {
   })
   @ApiCreatedResponse({
     description: 'Produto criado com sucesso',
-    type: RequestProductDto,
+    type: RequestProdutoDto,
   })
   @ApiBadRequestResponse({
     description: 'Dados inválidos ou faltando campos obrigatórios',
   })
   @ApiBody({
-    type: RequestProductDto,
+    type: RequestProdutoDto,
     description: 'Payload com dados do produto',
     examples: {
       exemplo1: {
@@ -54,8 +56,8 @@ export class ProductsController {
       },
     },
   })
-  create(@Body() RequestProductDto: RequestProductDto) {
-    return this.productsService.create(RequestProductDto);
+  create(@Body() RequestProdutoDto: RequestProdutoDto) {
+    return this.produtosService.create(RequestProdutoDto);
   }
 
   //Lista todos os produtos com possibilidade de filtros
@@ -65,18 +67,32 @@ export class ProductsController {
     description:
       'Retorna lista paginada de produtos com possibilidade de filtro',
   })
+  @ApiExtraModels(ResponseProdutoDTO)
   @ApiOkResponse({
-    description: 'Lista de produtos retornada com sucesso',
+    description: 'Listagem de produtos',
     schema: {
       type: 'object',
       properties: {
+        success: { type: 'boolean', example: true },
         data: {
           type: 'array',
+          items: { $ref: getSchemaPath(ResponseProdutoDTO) },
+          example: [
+            {
+              id: 1,
+              descricao: 'Produto A',
+              custo: '100.00',
+            },
+            {
+              id: 2,
+              descricao: 'Produto B',
+              custo: '200.00',
+            },
+          ],
         },
-        total: {
-          type: 'integer',
-          example: 100,
-        },
+        total: { type: 'number', example: 2 },
+        page: { type: 'string', example: '1' },
+        lastPage: { type: 'number', example: 1 },
       },
     },
   })
@@ -123,7 +139,7 @@ export class ProductsController {
     @Query('custoMin') custoMin?: number,
     @Query('custoMax') custoMax?: number,
   ) {
-    return this.productsService.findAll(paginationDto, {
+    return this.produtosService.findAll(paginationDto, {
       id,
       descricao,
       custoMin,
@@ -142,13 +158,13 @@ export class ProductsController {
   })
   @ApiOkResponse({
     description: 'Produto encontrado',
-    type: RequestProductDto,
+    type: RequestProdutoDto,
   })
   @ApiNotFoundResponse({
     description: 'Produto não encontrado',
   })
   findOne(@Param('id') id: string) {
-    return this.productsService.findOne(+id);
+    return this.produtosService.findOne(+id);
   }
 
   //atualiza um produto
@@ -162,7 +178,7 @@ export class ProductsController {
   })
   @ApiOkResponse({
     description: 'Produto atualizado com sucesso',
-    type: RequestProductDto,
+    type: RequestProdutoDto,
   })
   @ApiNotFoundResponse({
     description: 'Produto não encontrado',
@@ -171,7 +187,7 @@ export class ProductsController {
     description: 'Dados inválidos',
   })
   @ApiBody({
-    type: RequestProductDto,
+    type: RequestProdutoDto,
     description: 'Campos para atualização (todos opcionais)',
     examples: {
       exemplo1: {
@@ -188,9 +204,9 @@ export class ProductsController {
   })
   update(
     @Param('id') id: string,
-    @Body() UpdateProductDTO: Partial<RequestProductDto>,
+    @Body() UpdateProdutoDTO: Partial<RequestProdutoDto>,
   ) {
-    return this.productsService.update(+id, UpdateProductDTO);
+    return this.produtosService.update(+id, UpdateProdutoDTO);
   }
 
   //deleta um produto
@@ -209,6 +225,6 @@ export class ProductsController {
     description: 'Produto não encontrado',
   })
   remove(@Param('id') id: string) {
-    return this.productsService.remove(+id);
+    return this.produtosService.remove(+id);
   }
 }

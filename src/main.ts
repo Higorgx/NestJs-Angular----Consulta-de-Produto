@@ -1,7 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
-import { RequestProductDto } from './products/dto/request-product.dto';
+import { RequestProdutoDto } from './produtos/dto/request-produto.dto';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -16,7 +16,7 @@ async function bootstrap() {
     .build();
   const documentFactory = () =>
     SwaggerModule.createDocument(app, config, {
-      extraModels: [RequestProductDto],
+      extraModels: [RequestProdutoDto],
     });
   SwaggerModule.setup('api', app, documentFactory);
 

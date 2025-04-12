@@ -3,8 +3,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { ProductEntity } from './products/entities/product.entity'; // Importe suas entidades
-import { ProductsModule } from './products/products.module';
+import { Produto } from './produtos/entities/produto.entity';
+import { ProdutosModule } from './produtos/produtos.module';
 
 @Module({
   imports: [
@@ -13,7 +13,7 @@ import { ProductsModule } from './products/products.module';
       envFilePath: '.env',
     }),
     TypeOrmModule.forRootAsync({
-      imports: [ConfigModule, ProductsModule],
+      imports: [ConfigModule, ProdutosModule],
       useFactory: (configService: ConfigService) => ({
         type: 'postgres',
         host: configService.get('DB_HOST'),
@@ -21,7 +21,7 @@ import { ProductsModule } from './products/products.module';
         username: configService.get('DB_USERNAME'),
         password: configService.get('DB_PASSWORD'),
         database: configService.get('DB_DATABASE'),
-        entities: [ProductEntity],
+        entities: [Produto],
         synchronize: true,
         autoLoadEntities: true,
       }),

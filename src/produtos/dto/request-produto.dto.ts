@@ -7,7 +7,7 @@ import {
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
-export class RequestProductDto {
+export class RequestProdutoDto {
   @ApiProperty({
     example: 'Notebook Dell Inspiron',
     description: 'Descrição do produto (máx. 60 caracteres)',

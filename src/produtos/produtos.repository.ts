@@ -1,22 +1,22 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, FindOptionsWhere, Between, Like } from 'typeorm';
-import { ProductEntity } from './entities/product.entity';
+import { Produto } from './entities/produto.entity';
 import { PaginationResult } from '../common/interfaces/pagination-result.interface';
 
 @Injectable()
-export class ProductsRepository {
+export class ProdutosRepository {
   constructor(
-    @InjectRepository(ProductEntity)
-    private readonly repository: Repository<ProductEntity>,
+    @InjectRepository(Produto)
+    private readonly repository: Repository<Produto>,
   ) {}
 
-  async create(productData: Partial<ProductEntity>): Promise<ProductEntity> {
-    const product = this.repository.create(productData);
-    return await this.repository.save(product);
+  async create(produtoData: Partial<Produto>): Promise<Produto> {
+    const produto = this.repository.create(produtoData);
+    return await this.repository.save(produto);
   }
 
-  async findById(id: number): Promise<ProductEntity | null> {
+  async findById(id: number): Promise<Produto | null> {
     return this.repository.findOneBy({ id });
   }
 
@@ -29,9 +29,11 @@ export class ProductsRepository {
       custoMin?: number;
       custoMax?: number;
     },
-  ): Promise<PaginationResult<ProductEntity>> {
+    orderBy: string = 'id',
+    orderDirection: 'asc' | 'desc' = 'asc',
+  ): Promise<PaginationResult<Produto>> {
     const skip = (page - 1) * limit;
-    const where: FindOptionsWhere<ProductEntity> = {};
+    const where: FindOptionsWhere<Produto> = {};
 
     if (filters) {
       if (filters.id) where.id = filters.id;
@@ -44,11 +46,12 @@ export class ProductsRepository {
       }
     }
 
-    // Forçando a tipagem explícita aqui
-    const [data, total]: [ProductEntity[], number] =
+    const [data, total]: [Produto[], number] =
       await this.repository.findAndCount({
         where,
-        order: { id: 'ASC' },
+        order: {
+          [orderBy]: orderDirection.toUpperCase(),
+        },
         take: limit,
         skip,
       });
@@ -63,8 +66,8 @@ export class ProductsRepository {
 
   async update(
     id: number,
-    updateData: Partial<ProductEntity>,
-  ): Promise<ProductEntity | null> {
+    updateData: Partial<Produto>,
+  ): Promise<Produto | null> {
     await this.repository.update(id, updateData);
     return this.findById(id);
   }

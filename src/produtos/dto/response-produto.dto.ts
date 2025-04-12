@@ -1,7 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { ProductEntity } from '../entities/product.entity';
+import { Produto } from '../entities/produto.entity';
 
-export class ResponseProductDTO {
+export class ResponseProdutoDTO {
   @ApiProperty({
     example: 1,
     description: 'ID único do produto',
@@ -25,12 +25,12 @@ export class ResponseProductDTO {
     description: 'Imagem do produto em base64',
     type: String,
   })
-  imagem?: string;
+  imagem?: string | null | undefined;
 
-  constructor(product: ProductEntity) {
-    this.id = product.id;
-    this.descricao = product.descricao;
-    this.custo = product.custo;
-    this.imagem = product.imagem?.toString('base64');
+  constructor(produto: Produto) {
+    this.id = produto.id;
+    this.descricao = produto.descricao;
+    this.custo = produto.custo;
+    this.imagem = produto.imagem?.toString('base64');
   }
 }
