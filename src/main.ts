@@ -12,7 +12,9 @@ async function bootstrap() {
       'Esta é uma API de teste para o processo seletivo da vaga de Desenvolvedor de Software Jr. da empresa VR Software.',
     )
     .setVersion('1.0')
-    .addTag('produtos')
+    .addTag('Produto')
+    .addTag('Loja')
+    .addTag('Produto Loja')
     .build();
   const documentFactory = () =>
     SwaggerModule.createDocument(app, config, {

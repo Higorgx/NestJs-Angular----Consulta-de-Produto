@@ -10,7 +10,7 @@ import {
 } from '@nestjs/common';
 import { ProdutosService } from './produtos.service';
 import { RequestProdutoDto } from './dto/request-produto.dto';
-import { PaginationDto } from './dto/pagination.dto';
+import { PaginationProdutoDto } from './dto/pagination-produto.dto';
 import {
   ApiTags,
   ApiOperation,
@@ -26,7 +26,7 @@ import {
 } from '@nestjs/swagger';
 import { ResponseProdutoDTO } from './dto/response-produto.dto';
 
-@ApiTags('produtos')
+@ApiTags('Produto')
 @Controller('produtos')
 export class ProdutosController {
   constructor(private readonly produtosService: ProdutosService) {}
@@ -133,7 +133,7 @@ export class ProdutosController {
     description: 'Número da pagina (padrão: 1)',
   })
   async findAll(
-    @Query() paginationDto: PaginationDto,
+    @Query() paginationDto: PaginationProdutoDto,
     @Query('id') id?: number,
     @Query('descricao') descricao?: string,
     @Query('custoMin') custoMin?: number,

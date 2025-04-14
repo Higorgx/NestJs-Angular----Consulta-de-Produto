@@ -1,12 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { RequestProdutoDto } from './dto/request-produto.dto';
-import { PaginationDto } from './dto/pagination.dto';
+import { PaginationProdutoDto } from './dto/pagination-produto.dto';
 import { ProdutosRepository } from './produtos.repository';
 import { ResponseProdutoDTO } from './dto/response-produto.dto';
 import { BaseResponseDto } from '../common/dto/base-response.dto';
 import { PaginatedResponseDto } from '../common/dto/paginated-response.dto';
 import { Produto } from './entities/produto.entity';
-import { PaginationResult } from 'src/common/interfaces/pagination-result.interface';
 
 @Injectable()
 export class ProdutosService {
@@ -82,7 +81,7 @@ export class ProdutosService {
   }
 
   async findAll(
-    paginationDto?: PaginationDto,
+    paginationDto?: PaginationProdutoDto,
     filters?: {
       id?: number;
       descricao?: string;
@@ -92,11 +91,11 @@ export class ProdutosService {
   ): Promise<PaginatedResponseDto<ResponseProdutoDTO>> {
     try {
       const { limit = 10, page = 1 } = paginationDto || {};
-      const paginatedResult = (await this.produtosRepository.findAllPaginated(
+      const paginatedResult = await this.produtosRepository.findAllPaginated(
         page,
         limit,
         filters,
-      )) as PaginationResult<Produto>;
+      );
 
       const { data, total, page: currentPage, lastPage } = paginatedResult;
 
