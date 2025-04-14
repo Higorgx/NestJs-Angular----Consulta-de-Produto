@@ -1,0 +1,12 @@
+/* Estilos personalizados */
+.table-responsive {
+    min-height: 300px;
+  }
+  
+  .page-link {
+    cursor: pointer;
+  }
+  
+  .form-control, .form-select {
+    max-width: 100%;
+  }

@@ -1,1 +1,29 @@
-/* You can add global styles to this file, and also import other style files */
+
+  .btn-circle {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%!important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+}
+.input-line {
+    border: none;
+    border-bottom: 1px solid #333;
+    background: transparent;
+    padding: 5px 0;
+  }
+  
+  .input-line:focus {
+    outline: none;
+    box-shadow: none;
+    border-bottom: 2px solid #0d6efd;
+  }
+  
+  /* Centralização do título na navbar */
+  .nav-title {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+  }
