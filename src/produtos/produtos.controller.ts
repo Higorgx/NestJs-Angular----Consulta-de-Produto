@@ -30,7 +30,6 @@ import { ResponseProdutoDTO } from './dto/response-produto.dto';
 @Controller('produtos')
 export class ProdutosController {
   constructor(private readonly produtosService: ProdutosService) {}
-  //Cria um novo produto
   @Post()
   @ApiOperation({
     summary: 'Cria um novo produto',
@@ -60,7 +59,6 @@ export class ProdutosController {
     return this.produtosService.create(RequestProdutoDto);
   }
 
-  //Lista todos os produtos com possibilidade de filtros
   @Get()
   @ApiOperation({
     summary: 'Lista produtos',
@@ -147,7 +145,6 @@ export class ProdutosController {
     });
   }
 
-  //Busca um produto especifico
   @Get(':id')
   @ApiOperation({ summary: 'Busca produto por ID' })
   @ApiParam({
@@ -167,7 +164,6 @@ export class ProdutosController {
     return this.produtosService.findOne(+id);
   }
 
-  //atualiza um produto
   @Patch(':id')
   @ApiOperation({ summary: 'Atualiza um produto' })
   @ApiParam({
@@ -209,7 +205,6 @@ export class ProdutosController {
     return this.produtosService.update(+id, UpdateProdutoDTO);
   }
 
-  //deleta um produto
   @Delete(':id')
   @ApiOperation({ summary: 'Remove um produto' })
   @ApiParam({

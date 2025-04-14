@@ -47,7 +47,6 @@ export class ProdutoLojaService {
       });
     }
 
-    // Verifica se a loja existe
     const lojaExists = await this.lojaService.findOne(dto.idloja);
     if (!lojaExists.success) {
       return new BaseResponseDto({
