@@ -3,12 +3,13 @@ services:
     image: postgres
     restart: always
     environment:
+  #TODO senha porta host para o env
       POSTGRES_PASSWORD: root
       POSTGRES_DB: cadastro_produto
     container_name: postgres
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./backend/docker/postgres:/docker-entrypoint-initdb.d
+      - ./docker/postgres:/docker-entrypoint-initdb.d
     ports:
       - '5432:5432'
     networks:

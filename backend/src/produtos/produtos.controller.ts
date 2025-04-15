@@ -83,6 +83,7 @@ export class ProdutosController {
               produtoLoja: [
                 {
                   id: 1,
+                  loja: 'loja 1',
                   precovenda: '19.990',
                 },
               ],

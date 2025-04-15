@@ -1,14 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { ProdutoService } from './produto.service';
 
 @Component({
   selector: 'app-produto',
   templateUrl: './produto.component.html',
-  styleUrl: './produto.component.css',
+  styleUrls: ['./produto.component.css'],
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, RouterModule, FormsModule],
   providers: [ProdutoService]
 })
 export class ProdutoComponent implements OnInit {
@@ -36,7 +37,14 @@ export class ProdutoComponent implements OnInit {
   custoFiltro: number | null = null;
   vendaFiltro: number | null = null;
 
-  constructor(private produtoService: ProdutoService) { }
+  avisoMensagem: string | null = null;
+  produtoParaExcluir: any | null = null;
+  confirmacaoExclusaoVisivel = false;
+
+  constructor(
+    private produtoService: ProdutoService,
+    private router: Router
+  ) { }
 
   ngOnInit(): void {
     this.carregarProdutos();
@@ -118,30 +126,60 @@ export class ProdutoComponent implements OnInit {
     }
   }
 
-  gerarArrayPaginas(): number[] {
-    return Array.from({ length: this.totalPaginas }, (_, i) => i + 1);
-  }
-
-  adicionarProduto(): void {
-    console.log('Adicionar novo produto');
-  }
-
-  editarProduto(produto: any): void {
-    console.log('Editar produto:', produto);
-  }
-
   excluirProduto(produto: any): void {
-    if (confirm(`Tem certeza que deseja excluir o produto ${produto.descricao}?`)) {
-      this.produtoService.excluirProduto(produto.id).subscribe({
+    this.produtoParaExcluir = produto;
+    this.confirmacaoExclusaoVisivel = true;
+  }
+
+  confirmarExclusao(): void {
+    if (this.produtoParaExcluir) {
+      this.produtoService.excluirProduto(this.produtoParaExcluir.id).subscribe({
         next: () => {
-          alert('Produto excluído com sucesso!');
+          this.avisoMensagem = `Produto ${this.produtoParaExcluir.descricao} excluído com sucesso!`;
           this.carregarProdutos();
+          this.confirmacaoExclusaoVisivel = false;
         },
         error: (erro) => {
           console.error('Erro ao excluir o produto:', erro);
-          alert('Erro ao excluir o produto.');
+          this.avisoMensagem = `Erro ao excluir o produto ${this.produtoParaExcluir.descricao}.`;
+          this.confirmacaoExclusaoVisivel = false;
         }
       });
     }
+  }
+
+  cancelarExclusao(): void {
+    this.confirmacaoExclusaoVisivel = false;
+  }
+
+  gerarArrayPaginas(): number[] {
+    const total = this.totalPaginas;
+    const atual = this.paginaAtual;
+  
+    const maxPaginas = 4;
+    let inicio = Math.max(1, atual - Math.floor(maxPaginas / 2));
+    let fim = inicio + maxPaginas - 1;
+  
+    if (fim > total) {
+      fim = total;
+      inicio = Math.max(1, fim - maxPaginas + 1);
+    }
+  
+    const paginas: number[] = [];
+    for (let i = inicio; i <= fim; i++) {
+      paginas.push(i);
+    }
+  
+    return paginas;
+  }
+
+  adicionarProduto(): void {
+    this.router.navigate(['/cadastro'])
+      .catch(err => console.error('Erro na navegação:', err));
+  }
+  
+  editarProduto(produto: any): void {
+    this.router.navigate(['/cadastro', produto.id])
+      .catch(err => console.error('Erro na navegação:', err));
   }
 }

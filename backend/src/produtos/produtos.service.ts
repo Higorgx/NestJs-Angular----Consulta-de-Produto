@@ -168,10 +168,6 @@ export class ProdutosService {
 
       if (!produto) {
         throw new NotFoundException('Produto não encontrado');
-      } else {
-        if (produto.produtoLoja) {
-          await this.produtoLojaRepository.delete(id);
-        }
       }
 
       await this.produtosRepository.delete(id);
@@ -182,6 +178,7 @@ export class ProdutosService {
       });
     } catch (error) {
       throw new InternalServerErrorException(this.getErrorMessage(error));
+      // todo tratar mensagens de excessao
     }
   }
 }

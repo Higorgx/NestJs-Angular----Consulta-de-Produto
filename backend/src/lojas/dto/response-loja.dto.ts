@@ -1,4 +1,4 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 import { Loja } from '../entities/loja.entity';
 
 export class ResponseLojaDto {
@@ -13,19 +13,6 @@ export class ResponseLojaDto {
     description: 'Nome ou descrição da loja',
   })
   descricao: string;
-
-  @ApiPropertyOptional({
-    example: 'Rua das Lojas, 123',
-    description: 'Endereço da loja (opcional)',
-    type: String,
-  })
-  endereco?: string;
-
-  @ApiPropertyOptional({
-    description: 'Imagem da fachada da loja em base64',
-    type: String,
-  })
-  imagem?: string | null | undefined;
 
   constructor(loja: Loja) {
     this.id = loja.id;

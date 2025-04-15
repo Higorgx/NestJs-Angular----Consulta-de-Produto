@@ -1,38 +1,35 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Produto } from '../entities/produto.entity';
-import { ResponseProdutoLojaDto } from '../../produto-loja/dto/response-produto-loja.dto';
+import { ProdutoLoja } from '../../produto-loja/entities/produto-loja.entity';
+
+// Interface para o objeto de relação que o TypeORM injeta
+interface ProdutoLojaComRelacao extends ProdutoLoja {
+  loja?: {
+    id: number;
+    descricao: string;
+  };
+}
+
+class LojaResponseDto {
+  @ApiProperty({ example: 1 }) id: number;
+  @ApiProperty({ example: 'Loja Centro' }) descricao: string;
+}
+
+class ProdutoLojaResponseDto {
+  @ApiProperty() id: number;
+  @ApiProperty() idproduto: number;
+  @ApiProperty() idloja: number;
+  @ApiProperty() precovenda: number;
+  @ApiPropertyOptional({ type: LojaResponseDto }) loja?: LojaResponseDto;
+}
 
 export class ResponseProdutoDTO {
-  @ApiProperty({
-    example: 1,
-    description: 'ID único do produto',
-  })
-  id: number;
-
-  @ApiProperty({
-    example: 'Notebook Dell Inspiron',
-    description: 'Descrição completa do produto',
-  })
-  descricao: string;
-
-  @ApiProperty({
-    example: 3500.99,
-    description: 'Custo do produto',
-    type: Number,
-  })
-  custo: number;
-
-  @ApiPropertyOptional({
-    description: 'Imagem do produto em base64',
-    type: String,
-  })
-  imagem?: string | null | undefined;
-
-  @ApiProperty({
-    type: [ResponseProdutoLojaDto],
-    description: 'Lista de preços de venda do produto por loja',
-  })
-  produtoLoja: ResponseProdutoLojaDto[];
+  @ApiProperty() id: number;
+  @ApiProperty() descricao: string;
+  @ApiProperty() custo: number;
+  @ApiPropertyOptional() imagem?: string;
+  @ApiProperty({ type: [ProdutoLojaResponseDto] })
+  produtoLoja: ProdutoLojaResponseDto[];
 
   constructor(produto: Produto) {
     this.id = produto.id;
@@ -41,11 +38,23 @@ export class ResponseProdutoDTO {
     this.imagem = produto.imagem?.toString('base64');
 
     this.produtoLoja =
-      produto.produtoLoja?.map((pl) => ({
-        id: pl.id,
-        idproduto: pl.idproduto,
-        idloja: pl.idloja,
-        precovenda: pl.precovenda,
-      })) || [];
+      produto.produtoLoja?.map((pl: ProdutoLojaComRelacao) => {
+        const item: ProdutoLojaResponseDto = {
+          id: pl.id,
+          idproduto: pl.idproduto,
+          idloja: pl.idloja,
+          precovenda: pl.precovenda,
+        };
+
+        // Acesso seguro à relação carregada (se existir)
+        if (pl['loja']) {
+          item.loja = {
+            id: pl['loja'].id,
+            descricao: pl['loja'].descricao,
+          };
+        }
+
+        return item;
+      }) || [];
   }
 }

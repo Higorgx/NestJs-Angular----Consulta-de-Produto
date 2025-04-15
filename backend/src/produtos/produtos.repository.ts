@@ -19,7 +19,7 @@ export class ProdutosRepository {
   async findById(id: number): Promise<Produto | null> {
     return this.repository.findOne({
       where: { id },
-      relations: ['produtoLoja'],
+      relations: ['produtoLoja', 'Loja'],
     });
   }
 
@@ -42,6 +42,8 @@ export class ProdutosRepository {
     const query = this.repository
       .createQueryBuilder('produto')
       .leftJoinAndSelect('produto.produtoLoja', 'produtoLoja')
+      .leftJoin('produtoLoja.idloja', 'loja')
+      .addSelect(['loja.id', 'loja.descricao'])
       .orderBy(
         `produto.${orderBy}`,
         orderDirection.toUpperCase() as 'ASC' | 'DESC',

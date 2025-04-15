@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { concat, Observable } from 'rxjs';
-import { RespostaProduto, FiltrosProduto, excluirProduto } from './produto.model';
+import { Observable } from 'rxjs';
+import { RespostaProduto, FiltrosProduto, Produto } from './produto.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProdutoService {
+  
   private apiUrl = 'http://localhost:3000/produtos';
 
   constructor(private http: HttpClient) { }
@@ -28,12 +29,35 @@ export class ProdutoService {
     return this.http.get<RespostaProduto>(this.apiUrl, { params });
   }
 
-  excluirProduto(id: number): Observable<RespostaProduto> {
-    const url = `${this.apiUrl}/${id}`;
-    console.log('Requisição DELETE para:', url);
-    this.http.delete<RespostaProduto>(url);
-    return this.http.delete<RespostaProduto>(url);
+  obterProdutoPorId(id: number): Observable<Produto> {
+    return this.http.get<Produto>(`${this.apiUrl}/${id}`);
+  }
+
+  criarProduto(produto: Produto): Observable<Produto> {
+    return this.http.post<Produto>(this.apiUrl, produto);
+  }
+
+  atualizarProduto(id: number, produto: Produto): Observable<Produto> {
+    return this.http.put<Produto>(`${this.apiUrl}/${id}`, produto);
+  }
+
+  excluirProduto(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
+
+  // Métodos para gerenciamento de preços por loja
+  adicionarPrecoLoja(produtoId: number, lojaId: number, preco: number): Observable<any> {
+    return this.http.post(`${this.apiUrl}/${produtoId}/lojas`, {
+      lojaId,
+      preco
+    });
+  }
+
+  atualizarPrecoLoja(produtoId: number, lojaId: number, preco: number): Observable<any> {
+    return this.http.put(`${this.apiUrl}/${produtoId}/lojas/${lojaId}`, { preco });
+  }
+
+  removerPrecoLoja(produtoId: number, lojaId: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/${produtoId}/lojas/${lojaId}`);
   }
 }
-
-export type { FiltrosProduto };

@@ -1,6 +1,6 @@
 export interface Produto {
-    id: number;
-    descricao: string;
+    id: number | null;
+    descricao: number | null;
     custo: string;
   }
   
@@ -25,6 +25,15 @@ export interface Produto {
     vendaMaximo?: number | null;
   }
 
-  export interface excluirProduto {
+    export interface FiltrosProduto {
+    limite?: number;
+    page?: number;
+    ordenarPor?: string | null; 
+    direcaoOrdenacao?: string | null; 
     id?: number | null;
+    descricao?: string;
+    custoMinimo?: number | null;
+    custoMaximo?: number | null;
+    vendaMinimo?: number | null;
+    vendaMaximo?: number | null;
   }
