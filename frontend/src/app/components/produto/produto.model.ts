@@ -21,4 +21,10 @@ export interface Produto {
     descricao?: string;
     custoMinimo?: number | null;
     custoMaximo?: number | null;
+    vendaMinimo?: number | null;
+    vendaMaximo?: number | null;
+  }
+
+  export interface excluirProduto {
+    id?: number | null;
   }

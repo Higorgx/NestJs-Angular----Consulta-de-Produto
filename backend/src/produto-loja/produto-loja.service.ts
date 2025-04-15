@@ -10,7 +10,7 @@ import { ProdutosService } from '../produtos/produtos.service';
 import { LojasService } from '../lojas/lojas.service';
 
 @Injectable()
-export class ProdutoLojaService {
+export class produtoLojaservice {
   constructor(
     private readonly repository: ProdutoLojaRepository,
     private readonly lojaService: LojasService,

@@ -14,27 +14,27 @@ import { ProdutoService } from './produto.service';
 export class ProdutoComponent implements OnInit {
   produtos: any[] = [];
   carregando = false;
-  
-  // Paginação
+
   paginaAtual = 1;
-  totalItens = 0; // Adicionada a propriedade que estava faltando
+  totalItens = 0;
   itensPorPagina = 10;
   totalPaginas = 1;
-  
-  // Filtros (mantendo custoMinimo e custoMaximo como original)
+
   filtros = {
     id: null as number | null,
     descricao: '',
     custoMinimo: null as number | null,
     custoMaximo: null as number | null,
+    vendaMinimo: null as number | null,
+    vendaMaximo: null as number | null,
     limite: 5,
     pagina: 1,
     ordenarPor: 'id' as 'id' | 'descricao' | 'custo',
     direcaoOrdenacao: 'asc' as 'asc' | 'desc'
   };
 
-  // Propriedade auxiliar para o campo único de custo no template
   custoFiltro: number | null = null;
+  vendaFiltro: number | null = null;
 
   constructor(private produtoService: ProdutoService) { }
 
@@ -44,8 +44,7 @@ export class ProdutoComponent implements OnInit {
 
   carregarProdutos(): void {
     this.carregando = true;
-    
-    // Atualiza ambos custoMinimo e custoMaximo com o mesmo valor
+
     if (this.custoFiltro !== null) {
       this.filtros.custoMinimo = this.custoFiltro;
       this.filtros.custoMaximo = this.custoFiltro;
@@ -54,19 +53,28 @@ export class ProdutoComponent implements OnInit {
       this.filtros.custoMaximo = null;
     }
 
+    if (this.vendaFiltro !== null) {
+      this.filtros.vendaMinimo = this.vendaFiltro;
+      this.filtros.vendaMaximo = this.vendaFiltro;
+    } else {
+      this.filtros.vendaMinimo = null;
+      this.filtros.vendaMaximo = null;
+    }
+
     const params = {
       ...this.filtros,
       id: this.filtros.id || undefined,
       descricao: this.filtros.descricao || undefined,
       custoMinimo: this.filtros.custoMinimo || undefined,
       custoMaximo: this.filtros.custoMaximo || undefined,
-      page: this.filtros.pagina|| undefined,
+      vendaMinimo: this.filtros.vendaMinimo || undefined,
+      vendaMaximo: this.filtros.vendaMaximo || undefined,
+      page: this.filtros.pagina || undefined,
     };
 
     this.produtoService.listarProdutos(params)
       .subscribe({
         next: (resposta) => {
-          console.log(resposta, 'CHEGOU')
           this.produtos = resposta.data;
           this.totalItens = resposta.total;
           this.paginaAtual = resposta.page;
@@ -91,17 +99,19 @@ export class ProdutoComponent implements OnInit {
       descricao: '',
       custoMinimo: null,
       custoMaximo: null,
+      vendaMinimo: null,
+      vendaMaximo: null,
       limite: 5,
       pagina: 1,
       ordenarPor: 'id',
       direcaoOrdenacao: 'asc'
     };
     this.custoFiltro = null;
+    this.vendaFiltro = null;
     this.carregarProdutos();
   }
 
   mudarPagina(page: number): void {
-    console.log(page)
     if (page >= 1 && page <= this.totalPaginas) {
       this.filtros.pagina = page;
       this.carregarProdutos();
@@ -109,7 +119,7 @@ export class ProdutoComponent implements OnInit {
   }
 
   gerarArrayPaginas(): number[] {
-    return Array.from({length: this.totalPaginas}, (_, i) => i + 1);
+    return Array.from({ length: this.totalPaginas }, (_, i) => i + 1);
   }
 
   adicionarProduto(): void {
@@ -122,7 +132,16 @@ export class ProdutoComponent implements OnInit {
 
   excluirProduto(produto: any): void {
     if (confirm(`Tem certeza que deseja excluir o produto ${produto.descricao}?`)) {
-      console.log('Excluir produto:', produto);
+      this.produtoService.excluirProduto(produto.id).subscribe({
+        next: () => {
+          alert('Produto excluído com sucesso!');
+          this.carregarProdutos();
+        },
+        error: (erro) => {
+          console.error('Erro ao excluir o produto:', erro);
+          alert('Erro ao excluir o produto.');
+        }
+      });
     }
   }
 }

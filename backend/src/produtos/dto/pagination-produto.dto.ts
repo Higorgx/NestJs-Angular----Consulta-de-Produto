@@ -1,10 +1,10 @@
-import { IsOptional, IsInt, Min, IsString } from 'class-validator';
+import { IsOptional, IsInt, Min, IsString, IsNumber } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 
 export class PaginationProdutoDto {
   @ApiPropertyOptional({
     example: 10,
-    description: 'Limite de itens por página (padrão: 10)',
+    description: 'Limite de itens por página',
     default: 10,
     minimum: 1,
   })
@@ -15,7 +15,7 @@ export class PaginationProdutoDto {
 
   @ApiPropertyOptional({
     example: 1,
-    description: 'Número da página (padrão: 1)',
+    description: 'Número da página',
     default: 1,
     minimum: 1,
   })
@@ -26,7 +26,7 @@ export class PaginationProdutoDto {
 
   @ApiPropertyOptional({
     example: 'descricao',
-    description: 'Campo pelo qual ordenar',
+    description: 'Campo de ordenação',
     default: 'id',
   })
   @IsOptional()
@@ -35,10 +35,20 @@ export class PaginationProdutoDto {
 
   @ApiPropertyOptional({
     example: 'asc',
-    description: 'Direção da ordenação (asc ou desc)',
+    description: 'Direção da ordenação',
     default: 'asc',
   })
   @IsOptional()
   @IsString()
   orderDirection?: 'asc' | 'desc' = 'asc';
+
+  @ApiPropertyOptional({ example: 100, description: 'Preço de venda mínimo' })
+  @IsOptional()
+  @IsNumber()
+  vendaMin?: number;
+
+  @ApiPropertyOptional({ example: 500, description: 'Preço de venda máximo' })
+  @IsOptional()
+  @IsNumber()
+  vendaMax?: number;
 }

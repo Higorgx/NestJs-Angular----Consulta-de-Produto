@@ -1,7 +1,14 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+  InternalServerErrorException,
+  //Logger,
+} from '@nestjs/common';
 import { RequestProdutoDto } from './dto/request-produto.dto';
 import { PaginationProdutoDto } from './dto/pagination-produto.dto';
 import { ProdutosRepository } from './produtos.repository';
+import { ProdutoLojaRepository } from 'src/produto-loja/produto-loja.repository';
 import { ResponseProdutoDTO } from './dto/response-produto.dto';
 import { BaseResponseDto } from '../common/dto/base-response.dto';
 import { PaginatedResponseDto } from '../common/dto/paginated-response.dto';
@@ -9,7 +16,10 @@ import { Produto } from './entities/produto.entity';
 
 @Injectable()
 export class ProdutosService {
-  constructor(private readonly produtosRepository: ProdutosRepository) {}
+  constructor(
+    private readonly produtosRepository: ProdutosRepository,
+    private readonly produtoLojaRepository: ProdutoLojaRepository,
+  ) {}
 
   private isErrorWithMessage(error: unknown): error is { message: string } {
     return typeof error === 'object' && error !== null && 'message' in error;
@@ -23,11 +33,7 @@ export class ProdutosService {
   }
 
   private toResponseDto(produto: Produto): ResponseProdutoDTO {
-    return {
-      id: produto.id,
-      descricao: produto.descricao,
-      custo: produto.custo,
-    };
+    return new ResponseProdutoDTO(produto);
   }
 
   private isValidImageType(imageBase64: string): boolean {
@@ -52,11 +58,9 @@ export class ProdutosService {
       const { imagem, ...rest } = requestProdutoDto;
 
       if (imagem && !this.isValidImageType(imagem)) {
-        return new BaseResponseDto<ResponseProdutoDTO>({
-          success: false,
-          message:
-            'Imagem inválida. Apenas formatos .png e .jpg são permitidos.',
-        });
+        throw new BadRequestException(
+          'Imagem inválida. Apenas formatos .png e .jpg são permitidos.',
+        );
       }
 
       const produtoData: Partial<Produto> = {
@@ -72,11 +76,7 @@ export class ProdutosService {
         message: 'Produto criado com sucesso',
       });
     } catch (error) {
-      return new BaseResponseDto<ResponseProdutoDTO>({
-        success: false,
-        message: 'Erro ao criar produto',
-        errors: [this.getErrorMessage(error)],
-      });
+      throw new InternalServerErrorException(this.getErrorMessage(error));
     }
   }
 
@@ -87,6 +87,8 @@ export class ProdutosService {
       descricao?: string;
       custoMin?: number;
       custoMax?: number;
+      vendaMin?: number;
+      vendaMax?: number;
     },
   ): Promise<PaginatedResponseDto<ResponseProdutoDTO>> {
     try {
@@ -107,11 +109,7 @@ export class ProdutosService {
         lastPage,
       });
     } catch (error) {
-      return new PaginatedResponseDto<ResponseProdutoDTO>({
-        success: false,
-        message: 'Erro ao buscar produtos',
-        errors: [this.getErrorMessage(error)],
-      });
+      throw new InternalServerErrorException(this.getErrorMessage(error));
     }
   }
 
@@ -119,21 +117,14 @@ export class ProdutosService {
     try {
       const produto = await this.produtosRepository.findById(id);
       if (!produto) {
-        return new BaseResponseDto<ResponseProdutoDTO>({
-          success: false,
-          message: 'Produto não encontrado',
-        });
+        throw new NotFoundException('Produto não encontrado');
       }
       return new BaseResponseDto<ResponseProdutoDTO>({
         success: true,
         data: this.toResponseDto(produto),
       });
     } catch (error) {
-      return new BaseResponseDto<ResponseProdutoDTO>({
-        success: false,
-        message: 'Erro ao buscar produto',
-        errors: [this.getErrorMessage(error)],
-      });
+      throw new InternalServerErrorException(this.getErrorMessage(error));
     }
   }
 
@@ -145,11 +136,9 @@ export class ProdutosService {
       const { imagem, ...rest } = updateProdutoDto;
 
       if (imagem && !this.isValidImageType(imagem)) {
-        return new BaseResponseDto<ResponseProdutoDTO>({
-          success: false,
-          message:
-            'Imagem inválida. Apenas formatos .png e .jpg são permitidos.',
-        });
+        throw new BadRequestException(
+          'Imagem inválida. Apenas formatos .png e .jpg são permitidos.',
+        );
       }
 
       const produtoData: Partial<Produto> = {
@@ -160,10 +149,7 @@ export class ProdutosService {
       const produto = await this.produtosRepository.update(id, produtoData);
 
       if (!produto) {
-        return new BaseResponseDto<ResponseProdutoDTO>({
-          success: false,
-          message: 'Produto não encontrado',
-        });
+        throw new NotFoundException('Produto não encontrado');
       }
 
       return new BaseResponseDto<ResponseProdutoDTO>({
@@ -172,27 +158,30 @@ export class ProdutosService {
         message: 'Produto atualizado com sucesso',
       });
     } catch (error) {
-      return new BaseResponseDto<ResponseProdutoDTO>({
-        success: false,
-        message: 'Erro ao atualizar produto',
-        errors: [this.getErrorMessage(error)],
-      });
+      throw new InternalServerErrorException(this.getErrorMessage(error));
     }
   }
 
   async remove(id: number): Promise<BaseResponseDto<void>> {
     try {
+      const produto = await this.produtosRepository.findById(id);
+
+      if (!produto) {
+        throw new NotFoundException('Produto não encontrado');
+      } else {
+        if (produto.produtoLoja) {
+          await this.produtoLojaRepository.delete(id);
+        }
+      }
+
       await this.produtosRepository.delete(id);
+
       return new BaseResponseDto<void>({
         success: true,
         message: 'Produto removido com sucesso',
       });
     } catch (error) {
-      return new BaseResponseDto<void>({
-        success: false,
-        message: 'Erro ao remover produto',
-        errors: [this.getErrorMessage(error)],
-      });
+      throw new InternalServerErrorException(this.getErrorMessage(error));
     }
   }
 }

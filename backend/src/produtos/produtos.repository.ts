@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, FindOptionsWhere, Between, Like } from 'typeorm';
+import { Repository } from 'typeorm';
 import { Produto } from './entities/produto.entity';
 import { PaginationResult } from '../common/interfaces/pagination-result.interface';
 
@@ -17,44 +17,73 @@ export class ProdutosRepository {
   }
 
   async findById(id: number): Promise<Produto | null> {
-    return this.repository.findOneBy({ id });
+    return this.repository.findOne({
+      where: { id },
+      relations: ['produtoLoja'],
+    });
   }
 
   async findAllPaginated(
-    page: number = 1,
-    limit: number = 10,
+    page = 1,
+    limit = 10,
     filters?: {
       id?: number;
       descricao?: string;
       custoMin?: number;
       custoMax?: number;
+      vendaMin?: number;
+      vendaMax?: number;
     },
     orderBy: string = 'id',
     orderDirection: 'asc' | 'desc' = 'asc',
   ): Promise<PaginationResult<Produto>> {
     const skip = (page - 1) * limit;
-    const where: FindOptionsWhere<Produto> = {};
 
-    if (filters) {
-      if (filters.id) where.id = filters.id;
-      if (filters.descricao) where.descricao = Like(`%${filters.descricao}%`);
-      if (filters.custoMin || filters.custoMax) {
-        where.custo = Between(
-          filters.custoMin || 0,
-          filters.custoMax || 999999999,
-        );
-      }
+    const query = this.repository
+      .createQueryBuilder('produto')
+      .leftJoinAndSelect('produto.produtoLoja', 'produtoLoja')
+      .orderBy(
+        `produto.${orderBy}`,
+        orderDirection.toUpperCase() as 'ASC' | 'DESC',
+      )
+      .skip(skip)
+      .take(limit);
+
+    if (filters?.id) {
+      query.andWhere('produto.id = :id', { id: filters.id });
     }
 
-    const [data, total]: [Produto[], number] =
-      await this.repository.findAndCount({
-        where,
-        order: {
-          [orderBy]: orderDirection.toUpperCase(),
-        },
-        take: limit,
-        skip,
+    if (filters?.descricao) {
+      query.andWhere('produto.descricao ILIKE :descricao', {
+        descricao: `%${filters.descricao}%`,
       });
+    }
+
+    if (filters?.custoMin != null) {
+      query.andWhere('produto.custo >= :custoMin', {
+        custoMin: filters.custoMin,
+      });
+    }
+
+    if (filters?.custoMax != null) {
+      query.andWhere('produto.custo <= :custoMax', {
+        custoMax: filters.custoMax,
+      });
+    }
+
+    if (filters?.vendaMin != null) {
+      query.andWhere('produtoLoja.precovenda >= :vendaMin', {
+        vendaMin: filters.vendaMin,
+      });
+    }
+
+    if (filters?.vendaMax != null) {
+      query.andWhere('produtoLoja.precovenda <= :vendaMax', {
+        vendaMax: filters.vendaMax,
+      });
+    }
+
+    const [data, total] = await query.getManyAndCount();
 
     return {
       data,

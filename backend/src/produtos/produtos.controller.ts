@@ -80,6 +80,12 @@ export class ProdutosController {
               id: 1,
               descricao: 'Produto A',
               custo: '100.00',
+              produtoLoja: [
+                {
+                  id: 1,
+                  precovenda: '19.990',
+                },
+              ],
             },
             {
               id: 2,
@@ -136,12 +142,16 @@ export class ProdutosController {
     @Query('descricao') descricao?: string,
     @Query('custoMin') custoMin?: number,
     @Query('custoMax') custoMax?: number,
+    @Query('vendaMin') vendaMin?: number,
+    @Query('vendaMax') vendaMax?: number,
   ) {
     return this.produtosService.findAll(paginationDto, {
       id,
       descricao,
       custoMin,
       custoMax,
+      vendaMin,
+      vendaMax,
     });
   }
 

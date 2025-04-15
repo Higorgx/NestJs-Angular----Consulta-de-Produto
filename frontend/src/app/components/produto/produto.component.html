@@ -1,5 +1,4 @@
 <div class="container-fluid p-0">
-  <!-- Navbar -->
   <nav class="navbar navbar-dark bg-primary shadow-sm">
     <div class="container-fluid position-relative">
       <button class="btn btn-success rounded-circle p-0 d-flex align-items-center justify-content-center" 
@@ -12,30 +11,28 @@
   </nav>
 
   <div class="container py-4">
-    <!-- Filtros -->
     <div class="card mb-4 shadow-sm">
       <div class="card-body">
-        <form (ngSubmit)="aplicarFiltros()">
+        <form>
           <div class="row g-3">
-            <!-- Código -->
             <div class="col-md-3 col-6">
               <label for="filtroCodigo" class="form-label small text-uppercase fw-bold">Código</label>
               <input type="number" class="form-control input-line" 
                      id="filtroCodigo"
                      [(ngModel)]="filtros.id" name="id" 
+                     (ngModelChange)="aplicarFiltros()"
                      placeholder="______">
             </div>
 
-            <!-- Descrição -->
             <div class="col-md-3 col-6">
               <label for="filtroDescricao" class="form-label small text-uppercase fw-bold">Descrição</label>
               <input type="text" class="form-control input-line" 
                      id="filtroDescricao"
                      [(ngModel)]="filtros.descricao" name="descricao"
+                     (ngModelChange)="aplicarFiltros()"
                      placeholder="______">
             </div>
 
-            <!-- Custo (campo único que afeta custoMinimo e custoMaximo) -->
             <div class="col-md-3 col-6">
               <label for="filtroCusto" class="form-label small text-uppercase fw-bold">Custo</label>
               <div class="input-group">
@@ -43,18 +40,27 @@
                 <input type="number" step="0.01" class="form-control input-line" 
                        id="filtroCusto"
                        [(ngModel)]="custoFiltro" name="custo"
+                       (ngModelChange)="aplicarFiltros()"
                        placeholder="______">
               </div>
             </div>
 
-            <!-- Botões -->
+            <div class="col-md-3 col-6">
+              <label for="filtroVenda" class="form-label small text-uppercase fw-bold">Venda</label>
+              <div class="input-group">
+                <span class="input-group-text">R$</span>
+                <input type="number" step="0.01" class="form-control input-line" 
+                       id="filtroVenda"
+                       [(ngModel)]="vendaFiltro" name="venda"
+                       (ngModelChange)="aplicarFiltros()"
+                       placeholder="______">
+              </div>
+            </div>
+
             <div class="col-md-12 text-end">
               <button type="button" class="btn btn-sm btn-outline-secondary me-2" 
                       (click)="limparFiltros()">
                 Limpar
-              </button>
-              <button type="submit" class="btn btn-sm btn-primary">
-                Filtrar
               </button>
             </div>
           </div>
@@ -111,7 +117,7 @@
                   </tr>
                 }
               }
-              
+
               @if (carregando) {
                 <tr>
                   <td colspan="5" class="text-center py-4">
@@ -127,26 +133,23 @@
       </div>
     </div>
 
-    <!-- Paginação - Agora no final da tabela -->
+    <!-- Paginação -->
     <div class="d-flex justify-content-between align-items-center">
       <div class="text-muted small">
-       <!-- Dropdown de Itens por página -->
-  <div>
-    <div class="dropdown">
-      <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-        Itens por página: {{filtros.limite}}
-      </button>
-      <ul class="dropdown-menu">
-        <li *ngFor="let op of [5,10,15,20,30,50,80,100]">
-          <a class="dropdown-item" (click)="filtros.limite = op; aplicarFiltros()">
-            {{op}}
-          </a>
-        </li>
-      </ul>
-    </div>
-  </div>
+        <div class="dropdown">
+          <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Itens por página: {{filtros.limite}}
+          </button>
+          <ul class="dropdown-menu">
+            <li *ngFor="let op of [5,10,15,20,30,50,80,100]">
+              <a class="dropdown-item" (click)="filtros.limite = op; aplicarFiltros()">
+                {{op}}
+              </a>
+            </li>
+          </ul>
+        </div>
       </div>
-      
+
       <nav aria-label="Paginação">
         <ul class="pagination pagination-sm mb-0">
           <li class="page-item" [class.disabled]="paginaAtual === 1">
@@ -159,13 +162,13 @@
               <i class="bi bi-chevron-left"></i>
             </a>
           </li>
-          
+
           @for (pagina of gerarArrayPaginas(); track pagina) {
             <li class="page-item" [class.active]="pagina === paginaAtual">
               <a class="page-link" (click)="mudarPagina(pagina)">{{pagina}}</a>
             </li>
           }
-          
+
           <li class="page-item" [class.disabled]="paginaAtual === totalPaginas">
             <a class="page-link" (click)="mudarPagina(paginaAtual + 1)" title="Próxima página">
               <i class="bi bi-chevron-right"></i>
@@ -178,7 +181,7 @@
           </li>
         </ul>
       </nav>
-      
+
       <div class="text-muted small">
         Página {{paginaAtual}} de {{totalPaginas}}
       </div>

@@ -21,7 +21,7 @@ import {
   getSchemaPath,
   ApiExtraModels,
 } from '@nestjs/swagger';
-import { ProdutoLojaService } from './produto-loja.service';
+import { produtoLojaservice } from './produto-loja.service';
 import { RequestProdutoLojaDto } from './dto/request-produto-loja.dto';
 import { ResponseProdutoLojaDto } from './dto/response-produto-loja.dto';
 import { PaginationProdutoLojaDto } from './dto/pagination-produto-loja.dto';
@@ -29,7 +29,7 @@ import { PaginationProdutoLojaDto } from './dto/pagination-produto-loja.dto';
 @ApiTags('Produto Loja')
 @Controller('produtoloja')
 export class ProdutoLojaController {
-  constructor(private readonly produtoLojaService: ProdutoLojaService) {}
+  constructor(private readonly produtoLojaservice: produtoLojaservice) {}
 
   @Post()
   @ApiOperation({
@@ -57,7 +57,7 @@ export class ProdutoLojaController {
     },
   })
   create(@Body() dto: RequestProdutoLojaDto) {
-    return this.produtoLojaService.create(dto);
+    return this.produtoLojaservice.create(dto);
   }
 
   @Get()
@@ -140,7 +140,7 @@ export class ProdutoLojaController {
     @Query('idloja') idloja?: number,
     @Query('precovenda') precovenda?: number,
   ) {
-    return this.produtoLojaService.findAll(paginationDto, {
+    return this.produtoLojaservice.findAll(paginationDto, {
       id,
       idproduto,
       idloja,
@@ -164,7 +164,7 @@ export class ProdutoLojaController {
     description: 'Relação produto-loja não encontrada',
   })
   findOne(@Param('id') id: string) {
-    return this.produtoLojaService.findOne(+id);
+    return this.produtoLojaservice.findOne(+id);
   }
 
   @Patch(':id')
@@ -199,7 +199,7 @@ export class ProdutoLojaController {
     },
   })
   update(@Param('id') id: string, @Body() dto: Partial<RequestProdutoLojaDto>) {
-    return this.produtoLojaService.update(+id, dto);
+    return this.produtoLojaservice.update(+id, dto);
   }
 
   @Delete(':id')
@@ -217,6 +217,6 @@ export class ProdutoLojaController {
     description: 'Relação produto-loja não encontrada',
   })
   remove(@Param('id') id: string) {
-    return this.produtoLojaService.remove(+id);
+    return this.produtoLojaservice.remove(+id);
   }
 }

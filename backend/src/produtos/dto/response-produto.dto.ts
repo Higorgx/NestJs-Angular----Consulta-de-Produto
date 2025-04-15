@@ -1,5 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Produto } from '../entities/produto.entity';
+import { ResponseProdutoLojaDto } from '../../produto-loja/dto/response-produto-loja.dto';
 
 export class ResponseProdutoDTO {
   @ApiProperty({
@@ -27,10 +28,24 @@ export class ResponseProdutoDTO {
   })
   imagem?: string | null | undefined;
 
+  @ApiProperty({
+    type: [ResponseProdutoLojaDto],
+    description: 'Lista de preços de venda do produto por loja',
+  })
+  produtoLoja: ResponseProdutoLojaDto[];
+
   constructor(produto: Produto) {
     this.id = produto.id;
     this.descricao = produto.descricao;
     this.custo = produto.custo;
     this.imagem = produto.imagem?.toString('base64');
+
+    this.produtoLoja =
+      produto.produtoLoja?.map((pl) => ({
+        id: pl.id,
+        idproduto: pl.idproduto,
+        idloja: pl.idloja,
+        precovenda: pl.precovenda,
+      })) || [];
   }
 }
