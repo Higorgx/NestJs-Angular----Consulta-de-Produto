@@ -171,7 +171,7 @@ export class ProdutosController {
   @ApiNotFoundResponse({
     description: 'Produto não encontrado',
   })
-  findOne(@Param('id') id: string) {
+  async findOne(@Param('id') id: string) {
     return this.produtosService.findOne(+id);
   }
 

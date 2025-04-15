@@ -122,8 +122,12 @@ export class ProdutosService {
       return new BaseResponseDto<ResponseProdutoDTO>({
         success: true,
         data: this.toResponseDto(produto),
+        message: 'Produto encontrado com sucesso',
       });
     } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
       throw new InternalServerErrorException(this.getErrorMessage(error));
     }
   }

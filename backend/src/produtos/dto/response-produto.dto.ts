@@ -42,7 +42,7 @@ export class ResponseProdutoDTO {
         const item: ProdutoLojaResponseDto = {
           id: pl.id,
           idproduto: pl.idproduto,
-          idloja: pl.idloja,
+          idloja: pl.idloja, // Usando o campo idloja direto da entidade
           precovenda: pl.precovenda,
         };
 

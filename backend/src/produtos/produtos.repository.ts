@@ -17,10 +17,16 @@ export class ProdutosRepository {
   }
 
   async findById(id: number): Promise<Produto | null> {
-    return this.repository.findOne({
-      where: { id },
-      relations: ['produtoLoja', 'Loja'],
-    });
+    const query = this.repository
+      .createQueryBuilder('produto')
+      .leftJoinAndSelect('produto.produtoLoja', 'produtoLoja')
+      .leftJoin('produtoLoja.idloja', 'loja')
+      .addSelect(['loja.id', 'loja.descricao'])
+      .andWhere('produto.id = :id', { id: id });
+
+    const data = await query.getOne();
+
+    return data;
   }
 
   async findAllPaginated(
