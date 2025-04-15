@@ -4,30 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Cadastro de Produto</title>
- 
 </head>
 <body>
   <div class="container-fluid p-0">
-    <!-- Navbar com título clicável -->
     <nav class="navbar navbar-dark bg-primary shadow-sm">
       <div class="container-fluid position-relative">
-        <div class="d-flex gap-2">
-          <button class="btn btn-success rounded-circle p-0 d-flex align-items-center justify-content-center" 
-                  style="width: 36px; height: 36px;" 
-                  title="Salvar">
-            <i class="bi bi-save"></i>
-          </button>
-          <button class="btn btn-danger rounded-circle p-0 d-flex align-items-center justify-content-center" 
-                  style="width: 36px; height: 36px;" 
-                  title="Excluir">
-            <i class="bi bi-trash"></i>
-          </button>
-        </div>
         <h5 class="nav-title text-white mb-0" onclick="window.location.href='/'">Cadastro de Produto</h5>
       </div>
     </nav>
 
-    <!-- Restante do conteúdo permanece exatamente igual -->
     <div class="container py-4">
       <div class="row">
         <div class="col-md-8">
@@ -37,17 +22,17 @@
                 <div class="row g-3">
                   <div class="col-md-4 col-6">
                     <label for="codigo" class="form-label small text-uppercase fw-bold">Código</label>
-                    <input type="text" class="form-control input-line" id="codigo" placeholder="______">
+                    <input type="text" class="form-control input-line" id="codigo" [value]="produto.id" readonly>
                   </div>
                   <div class="col-md-4 col-6">
                     <label for="descricao" class="form-label small text-uppercase fw-bold">Descrição</label>
-                    <input type="text" class="form-control input-line" id="descricao" placeholder="______">
+                    <input type="text" class="form-control input-line" id="descricao" [(ngModel)]="produto.descricao" name="descricao" placeholder="______">
                   </div>
                   <div class="col-md-4 col-6">
                     <label for="custo" class="form-label small text-uppercase fw-bold">Custo</label>
                     <div class="input-group">
                       <span class="input-group-text">R$</span>
-                      <input type="number" step="0.01" class="form-control input-line" id="custo" placeholder="______">
+                      <input type="number" step="0.01" class="form-control input-line" id="custo" [(ngModel)]="produto.custo" name="custo" placeholder="______">
                     </div>
                   </div>
                 </div>
@@ -67,7 +52,7 @@
                   <i class="bi bi-plus-lg"></i>
                 </button>
               </div>
-              
+
               <div class="table-responsive">
                 <table class="table table-hover mb-0">
                   <thead class="table-light">
@@ -78,49 +63,9 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <tr>
-                      <td>Loja Principal</td>
-                      <td class="text-end">7,00</td>
-                      <td class="text-end">
-                        <div class="d-flex justify-content-end gap-2">
-                          <button class="btn btn-warning text-white rounded-circle p-0 d-flex align-items-center justify-content-center" 
-                                  style="width: 30px; height: 30px;" 
-                                  title="Editar"
-                                  data-bs-toggle="modal" 
-                                  data-bs-target="#priceModal">
-                            <i class="bi bi-pencil"></i>
-                          </button>
-                          <button class="btn btn-danger rounded-circle p-0 d-flex align-items-center justify-content-center" 
-                                  style="width: 30px; height: 30px;" 
-                                  title="Excluir">
-                            <i class="bi bi-trash"></i>
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>Loja 1</td>
-                      <td class="text-end">3,00</td>
-                      <td class="text-end">
-                        <div class="d-flex justify-content-end gap-2">
-                          <button class="btn btn-warning text-white rounded-circle p-0 d-flex align-items-center justify-content-center" 
-                                  style="width: 30px; height: 30px;" 
-                                  title="Editar"
-                                  data-bs-toggle="modal" 
-                                  data-bs-target="#priceModal">
-                            <i class="bi bi-pencil"></i>
-                          </button>
-                          <button class="btn btn-danger rounded-circle p-0 d-flex align-items-center justify-content-center" 
-                                  style="width: 30px; height: 30px;" 
-                                  title="Excluir">
-                            <i class="bi bi-trash"></i>
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>Loja 2</td>
-                      <td class="text-end">5,00</td>
+                    <tr *ngFor="let preco of produto.produtoLoja">
+                      <td>{{ preco.idloja.descricao }}</td>
+                      <td class="text-end">{{ preco.precovenda | currency:'BRL' }}</td>
                       <td class="text-end">
                         <div class="d-flex justify-content-end gap-2">
                           <button class="btn btn-warning text-white rounded-circle p-0 d-flex align-items-center justify-content-center" 
@@ -181,10 +126,7 @@
             <div class="mb-3">
               <label for="loja" class="form-label">Loja</label>
               <select class="form-select" id="loja">
-                <option selected>Selecione uma loja</option>
-                <option value="1">Loja Principal</option>
-                <option value="2">Loja 1</option>
-                <option value="3">Loja 2</option>
+                <option *ngFor="let loja of produto.produtoLoja" [value]="loja.idloja.id">{{ loja.idloja.descricao }}</option>
               </select>
             </div>
             <div class="mb-3">

@@ -1,10 +1,4 @@
-export interface Produto {
-    id: number | null;
-    descricao: number | null;
-    custo: string;
-  }
-  
-  export interface RespostaProduto {
+export interface RespostaProduto {
     lastPage: number;
     sucesso: boolean;
     data: Produto[];
@@ -37,3 +31,27 @@ export interface Produto {
     vendaMinimo?: number | null;
     vendaMaximo?: number | null;
   }
+
+  export interface ProdutoLoja {
+    id: number;
+    idloja: {
+      id: number;
+      descricao: string;
+    };
+    precovenda: string;
+  }
+  
+  export interface Produto {
+    id: number | null;
+    descricao: string | null;
+    custo: string;
+    produtoLoja: ProdutoLoja[]; // Array de objetos produtoLoja
+  }
+  
+  export interface ProdutoResponse {
+    success: boolean;
+    message: string;
+    data: Produto;
+  }
+  
+  

@@ -1,18 +1,22 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Produto } from '../produto/produto.model';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { Produto, ProdutoResponse } from '../produto/produto.model';
 import { ProdutoService } from '../produto/produto.service';
 
 @Component({
   selector: 'app-cadastro',
   templateUrl: './cadastro.component.html',
-  styleUrls: ['./cadastro.component.css']
+  styleUrls: ['./cadastro.component.css'],
+  imports: [CommonModule, FormsModule],
 })
 export class CadastroComponent implements OnInit {
   produto: Produto = {
     id: null,
     descricao: null,
-    custo: ''
+    custo: '',
+    produtoLoja: []
   };
   isEdicao: boolean = false;
   carregando: boolean = false;
@@ -34,12 +38,18 @@ export class CadastroComponent implements OnInit {
   carregarProduto(id: number): void {
     this.carregando = true;
     this.mensagemErro = null;
-    
+
+    // Chama o serviço e espera um ProdutoResponse
     this.produtoService.obterProdutoPorId(id).subscribe({
-      next: (produto) => {
-        this.produto = produto;
-        this.isEdicao = true;
-        this.carregando = false;
+      next: (res) => {
+        if (res.success) {
+          this.produto = res.data;
+          this.isEdicao = true;
+          this.carregando = false;
+        } else {
+          this.mensagemErro = 'Produto não encontrado';
+          this.carregando = false;
+        }
       },
       error: (err) => {
         console.error('Erro ao carregar produto', err);
@@ -76,28 +86,5 @@ export class CadastroComponent implements OnInit {
 
   cancelar(): void {
     this.router.navigate(['/produtos']);
-  }
-
-  // Métodos para manipulação de preços por loja
-  adicionarPrecoLoja(): void {
-    // Implementar lógica para abrir modal de adição de preço
-  }
-
-  editarPrecoLoja(loja: any): void {
-    // Implementar lógica para abrir modal de edição de preço
-  }
-
-  removerPrecoLoja(lojaId: number): void {
-    if (this.produto.id && confirm('Deseja realmente remover este preço?')) {
-      this.produtoService.removerPrecoLoja(this.produto.id, lojaId).subscribe({
-        next: () => {
-         // this.produto.lojas = this.produto.lojas?.filter(l => l.id !== lojaId) || [];
-        },
-        error: (err) => {
-          console.error('Erro ao remover preço', err);
-          this.mensagemErro = 'Erro ao remover preço da loja';
-        }
-      });
-    }
   }
 }
