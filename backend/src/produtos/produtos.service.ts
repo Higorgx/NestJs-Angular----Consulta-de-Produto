@@ -4,12 +4,10 @@ import {
   BadRequestException,
   InternalServerErrorException,
   Logger,
-  //Logger,
 } from '@nestjs/common';
 import { RequestProdutoDto } from './dto/request-produto.dto';
 import { PaginationProdutoDto } from './dto/pagination-produto.dto';
 import { ProdutosRepository } from './produtos.repository';
-import { ProdutoLojaRepository } from 'src/produto-loja/produto-loja.repository';
 import { ResponseProdutoDTO } from './dto/response-produto.dto';
 import { BaseResponseDto } from '../common/dto/base-response.dto';
 import { PaginatedResponseDto } from '../common/dto/paginated-response.dto';
@@ -17,10 +15,7 @@ import { Produto } from './entities/produto.entity';
 
 @Injectable()
 export class ProdutosService {
-  constructor(
-    private readonly produtosRepository: ProdutosRepository,
-    private readonly produtoLojaRepository: ProdutoLojaRepository,
-  ) {}
+  constructor(private readonly produtosRepository: ProdutosRepository) {}
 
   private isErrorWithMessage(error: unknown): error is { message: string } {
     return typeof error === 'object' && error !== null && 'message' in error;
@@ -122,6 +117,7 @@ export class ProdutosService {
       return new PaginatedResponseDto<ResponseProdutoDTO>({
         success: true,
         data: data.map((produto) => this.toResponseDto(produto)),
+        message: 'Produtos encontrados com sucesso',
         total,
         page: currentPage,
         lastPage,
@@ -168,18 +164,28 @@ export class ProdutosService {
         imagem: imagem ? this.base64ToBuffer(imagem) : undefined,
       };
 
-      const produto = await this.produtosRepository.update(id, produtoData);
+      const produtoExistente = await this.produtosRepository.findById(id);
 
-      if (!produto) {
-        throw new NotFoundException('Produto não encontrado');
+      if (!produtoExistente) {
+        throw new NotFoundException(`Produto com ID ${id} não encontrado`);
+      }
+
+      await this.produtosRepository.update(id, produtoData);
+      const produtoAtualizado = await this.produtosRepository.findById(id);
+
+      if (!produtoAtualizado) {
+        throw new NotFoundException('Produto não encontrado para atualização');
       }
 
       return new BaseResponseDto<ResponseProdutoDTO>({
         success: true,
-        data: this.toResponseDto(produto),
+        data: this.toResponseDto(produtoAtualizado),
         message: 'Produto atualizado com sucesso',
       });
     } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error; // Retorna a exceção já lançada
+      }
       throw new InternalServerErrorException(this.getErrorMessage(error));
     }
   }
@@ -199,8 +205,10 @@ export class ProdutosService {
         message: 'Produto removido com sucesso',
       });
     } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
       throw new InternalServerErrorException(this.getErrorMessage(error));
-      // todo tratar mensagens de excessao
     }
   }
 }
