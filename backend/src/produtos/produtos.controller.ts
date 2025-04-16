@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   Query,
+  Logger,
 } from '@nestjs/common';
 import { ProdutosService } from './produtos.service';
 import { RequestProdutoDto } from './dto/request-produto.dto';
@@ -15,7 +16,6 @@ import {
   ApiTags,
   ApiOperation,
   ApiBody,
-  ApiQuery,
   ApiParam,
   ApiCreatedResponse,
   ApiOkResponse,
@@ -75,25 +75,6 @@ export class ProdutosController {
         data: {
           type: 'array',
           items: { $ref: getSchemaPath(ResponseProdutoDTO) },
-          example: [
-            {
-              id: 1,
-              descricao: 'Produto A',
-              custo: '100.00',
-              produtoLoja: [
-                {
-                  id: 1,
-                  loja: 'loja 1',
-                  precovenda: '19.990',
-                },
-              ],
-            },
-            {
-              id: 2,
-              descricao: 'Produto B',
-              custo: '200.00',
-            },
-          ],
         },
         total: { type: 'number', example: 2 },
         page: { type: 'string', example: '1' },
@@ -101,59 +82,9 @@ export class ProdutosController {
       },
     },
   })
-  @ApiQuery({
-    name: 'id',
-    required: false,
-    type: Number,
-    description: 'Filtro por ID do produto',
-  })
-  @ApiQuery({
-    name: 'descricao',
-    required: false,
-    type: String,
-    description: 'Filtro por descrição (busca parcial)',
-  })
-  @ApiQuery({
-    name: 'custoMin',
-    required: false,
-    type: Number,
-    description: 'Valor mínimo para filtro por custo',
-  })
-  @ApiQuery({
-    name: 'custoMax',
-    required: false,
-    type: Number,
-    description: 'Valor máximo para filtro por custo',
-  })
-  @ApiQuery({
-    name: 'limit',
-    required: false,
-    type: Number,
-    description: 'Limite de itens por página (padrão: 10)',
-  })
-  @ApiQuery({
-    name: 'page',
-    required: false,
-    type: Number,
-    description: 'Número da pagina (padrão: 1)',
-  })
-  async findAll(
-    @Query() paginationDto: PaginationProdutoDto,
-    @Query('id') id?: number,
-    @Query('descricao') descricao?: string,
-    @Query('custoMin') custoMin?: number,
-    @Query('custoMax') custoMax?: number,
-    @Query('vendaMin') vendaMin?: number,
-    @Query('vendaMax') vendaMax?: number,
-  ) {
-    return this.produtosService.findAll(paginationDto, {
-      id,
-      descricao,
-      custoMin,
-      custoMax,
-      vendaMin,
-      vendaMax,
-    });
+  async findAll(@Query() paginationDto: PaginationProdutoDto) {
+    Logger.log('controller', paginationDto);
+    return this.produtosService.findAll(paginationDto);
   }
 
   @Get(':id')

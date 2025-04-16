@@ -26,7 +26,7 @@ export class PaginationProdutoDto {
 
   @ApiPropertyOptional({
     example: 'descricao',
-    description: 'Campo de ordenação',
+    description: 'Campo de ordenação (id, descricao, custo, precovenda)',
     default: 'id',
   })
   @IsOptional()
@@ -35,19 +35,58 @@ export class PaginationProdutoDto {
 
   @ApiPropertyOptional({
     example: 'asc',
-    description: 'Direção da ordenação',
+    description: 'Direção da ordenação (asc ou desc)',
     default: 'asc',
+    enum: ['asc', 'desc'],
   })
   @IsOptional()
   @IsString()
   orderDirection?: 'asc' | 'desc' = 'asc';
 
-  @ApiPropertyOptional({ example: 100, description: 'Preço de venda mínimo' })
+  @ApiPropertyOptional({
+    example: 1,
+    description: 'Filtrar por ID do produto',
+  })
+  @IsOptional()
+  @IsInt()
+  id?: number;
+
+  @ApiPropertyOptional({
+    example: 'Notebook',
+    description: 'Filtrar por descrição (busca parcial)',
+  })
+  @IsOptional()
+  @IsString()
+  descricao?: string;
+
+  @ApiPropertyOptional({
+    example: 100,
+    description: 'Preço de custo mínimo',
+  })
+  @IsOptional()
+  @IsNumber()
+  custoMin?: number;
+
+  @ApiPropertyOptional({
+    example: 500,
+    description: 'Preço de custo máximo',
+  })
+  @IsOptional()
+  @IsNumber()
+  custoMax?: number;
+
+  @ApiPropertyOptional({
+    example: 100,
+    description: 'Preço de venda mínimo',
+  })
   @IsOptional()
   @IsNumber()
   vendaMin?: number;
 
-  @ApiPropertyOptional({ example: 500, description: 'Preço de venda máximo' })
+  @ApiPropertyOptional({
+    example: 500,
+    description: 'Preço de venda máximo',
+  })
   @IsOptional()
   @IsNumber()
   vendaMax?: number;

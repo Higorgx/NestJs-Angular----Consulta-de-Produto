@@ -48,7 +48,11 @@ export class CadastroComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router
   ) {}
-
+  // ========== Ciclo de Vida do Componente ==========
+  navegarParaHome()
+    {
+      this.router.navigate(['/']);
+    } 
   // ========== Ciclo de Vida do Componente ==========
   ngOnInit(): void {
     const id = this.route.snapshot.params['id'];

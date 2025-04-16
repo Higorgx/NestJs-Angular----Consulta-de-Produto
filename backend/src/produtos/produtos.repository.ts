@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Produto } from './entities/produto.entity';
@@ -39,23 +39,27 @@ export class ProdutosRepository {
       custoMax?: number;
       vendaMin?: number;
       vendaMax?: number;
+      orderBy?: string;
+      orderDirection?: 'ASC' | 'DESC';
     },
-    orderBy: string = 'id',
-    orderDirection: 'asc' | 'desc' = 'asc',
   ): Promise<PaginationResult<Produto>> {
     const skip = (page - 1) * limit;
-
+    Logger.log(filters);
     const query = this.repository
       .createQueryBuilder('produto')
       .leftJoinAndSelect('produto.produtoLoja', 'produtoLoja')
       .leftJoin('produtoLoja.idloja', 'loja')
-      .addSelect(['loja.id', 'loja.descricao'])
-      .orderBy(
-        `produto.${orderBy}`,
-        orderDirection.toUpperCase() as 'ASC' | 'DESC',
-      )
-      .skip(skip)
-      .take(limit);
+      .addSelect(['loja.id', 'loja.descricao']);
+
+    // Add ordering if orderBy is provided
+    if (filters?.orderBy) {
+      query.orderBy(
+        `produto.${filters.orderBy}`,
+        filters.orderDirection || 'ASC', // Default to ASC if orderDirection is not provided
+      );
+    }
+
+    query.skip(skip).take(limit);
 
     if (filters?.id) {
       query.andWhere('produto.id = :id', { id: filters.id });

@@ -1,43 +1,52 @@
 <div class="container-fluid p-0">
+  <!-- Barra de navegação -->
   <nav class="navbar navbar-dark bg-primary shadow-sm">
     <div class="container-fluid position-relative">
-      <h5 class="nav-title text-white mb-0" onclick="window.location.href='/'">
+      <h5 class="nav-title text-white mb-0" (click)="navegarParaHome()">
         Cadastro de Produto
       </h5>
       <div class="d-flex gap-3">
-        <button class="btn btn-success rounded-circle" title="Salvar" (click)="salvar()">
+        <button class="btn btn-success rounded-circle" title="Salvar" (click)="salvar()" aria-label="Salvar produto">
           <i class="bi bi-save"></i>
         </button>
-        <button class="btn btn-danger rounded-circle" title="Excluir"
-          (click)="abrirConfirmacaoExclusao('produto', 'produto')">
+        <button class="btn btn-danger rounded-circle" title="Excluir" 
+                (click)="abrirConfirmacaoExclusao('produto', 'produto')" aria-label="Excluir produto">
           <i class="bi bi-trash"></i>
         </button>
       </div>
     </div>
   </nav>
 
+  <!-- Conteúdo principal -->
   <div class="container py-4">
     <div class="row">
+      <!-- Seção de formulário -->
       <div class="col-md-8">
+        <!-- Card de informações básicas -->
         <div class="card mb-4 shadow-sm">
           <div class="card-body">
-            <form>
+            <form (ngSubmit)="salvar()">
               <div class="row g-3">
                 <div class="col-md-4 col-6">
                   <label for="codigo" class="form-label small text-uppercase fw-bold">Código</label>
-                  <input type="text" class="form-control input-line" id="codigo" [value]="produto.id" disabled />
+                  <input type="text" class="form-control input-line" id="codigo" 
+                         [value]="produto.id" disabled aria-label="Código do produto" />
                 </div>
+                
                 <div class="col-md-4 col-6">
                   <label for="descricao" class="form-label small text-uppercase fw-bold">Descrição</label>
-                  <input type="text" class="form-control input-line" id="descricao" [(ngModel)]="produto.descricao"
-                    name="descricao" placeholder="______" />
+                  <input type="text" class="form-control input-line" id="descricao" 
+                         [(ngModel)]="produto.descricao" name="descricao" 
+                         placeholder="______" required aria-label="Descrição do produto" />
                 </div>
+                
                 <div class="col-md-4 col-6">
                   <label for="custo" class="form-label small text-uppercase fw-bold">Custo</label>
                   <div class="input-group">
                     <span class="input-group-text">R$</span>
                     <input type="number" step="0.01" class="form-control input-line" id="custo"
-                      [(ngModel)]="produto.custo" name="custo" placeholder="______" />
+                           [(ngModel)]="produto.custo" name="custo" 
+                           placeholder="______" aria-label="Custo do produto" />
                   </div>
                 </div>
               </div>
@@ -45,24 +54,27 @@
           </div>
         </div>
 
+        <!-- Card de preços -->
         <div class="card shadow-sm mb-3">
           <div class="card-body p-0">
             <div class="d-flex justify-content-between align-items-center p-3">
-              <h5 class="mb-0">Preços</h5>
+              <h2 class="h5 mb-0">Preços</h2>
               <button class="btn btn-primary rounded-circle p-0 d-flex align-items-center justify-content-center"
-                style="width: 36px; height: 36px" title="Adicionar Preço" data-bs-toggle="modal"
-                data-bs-target="#priceModal" *ngIf="produto.id" (click)="limparFormularioPreco()">
+                      style="width: 36px; height: 36px" title="Adicionar Preço" 
+                      data-bs-toggle="modal" data-bs-target="#priceModal" 
+                      *ngIf="produto.id" (click)="limparFormularioPreco()"
+                      aria-label="Adicionar novo preço">
                 <i class="bi bi-plus-lg"></i>
               </button>
             </div>
 
             <div class="table-responsive">
-              <table class="table table-hover mb-0">
+              <table class="table table-hover mb-0" aria-label="Lista de preços por loja">
                 <thead class="table-light">
                   <tr>
-                    <th>Loja</th>
-                    <th class="text-end">Preço Venda (R$)</th>
-                    <th class="text-end">Ações</th>
+                    <th scope="col">Loja</th>
+                    <th scope="col" class="text-end">Preço Venda (R$)</th>
+                    <th scope="col" class="text-end">Ações</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -73,16 +85,15 @@
                     </td>
                     <td class="text-end">
                       <div class="d-flex justify-content-end gap-2">
-                        <button
-                          class="btn btn-warning text-white rounded-circle p-0 d-flex align-items-center justify-content-center"
-                          style="width: 30px; height: 30px" title="Editar" data-bs-toggle="modal"
-                          data-bs-target="#priceModal" (click)="editarPreco(preco)">
+                        <button class="btn btn-warning text-white rounded-circle p-0 d-flex align-items-center justify-content-center"
+                                style="width: 30px; height: 30px" title="Editar" 
+                                data-bs-toggle="modal" data-bs-target="#priceModal" 
+                                (click)="editarPreco(preco)" aria-label="Editar preço">
                           <i class="bi bi-pencil"></i>
                         </button>
-                        <button
-                          class="btn btn-danger rounded-circle p-0 d-flex align-items-center justify-content-center"
-                          style="width: 30px; height: 30px" title="Excluir"
-                          (click)="abrirConfirmacaoExclusao(preco, 'preco')">
+                        <button class="btn btn-danger rounded-circle p-0 d-flex align-items-center justify-content-center"
+                                style="width: 30px; height: 30px" title="Excluir"
+                                (click)="abrirConfirmacaoExclusao(preco, 'preco')" aria-label="Excluir preço">
                           <i class="bi bi-trash"></i>
                         </button>
                       </div>
@@ -95,23 +106,25 @@
         </div>
       </div>
 
+      <!-- Seção de imagem -->
       <div class="col-md-4">
         <div class="card shadow-sm h-100">
           <div class="card-body d-flex flex-column">
-            <h5 class="mb-3">Imagem do Produto</h5>
-            <div
-              class="d-flex flex-column align-items-center justify-content-center flex-grow-1 mb-3 bg-light rounded">
-              <img *ngIf="produto.imagem" [src]="produto.imagem.startsWith('data:image') ? produto.imagem : 'data:image/jpg;base64,' + produto.imagem" alt="Imagem do Produto"
-                class="img-fluid rounded" />
+            <h2 class="h5 mb-3">Imagem do Produto</h2>
+            <div class="d-flex flex-column align-items-center justify-content-center flex-grow-1 mb-3 bg-light rounded">
+              <img *ngIf="produto.imagem" 
+                   [src]="produto.imagem.startsWith('data:image') ? produto.imagem : 'data:image/jpg;base64,' + produto.imagem" 
+                   alt="Imagem do Produto" class="img-fluid rounded" />
               <span *ngIf="!produto.imagem" class="text-muted">Sem imagem</span>
             </div>
             <div class="d-grid gap-2">
               <input type="file" id="imageUpload" class="d-none" accept=".jpg,.jpeg,.png"
-                (change)="onImageSelected($event)" />
-              <button class="btn btn-sm btn-outline-primary" onclick="document.getElementById('imageUpload').click()">
+                     (change)="onImageSelected($event)" />
+              <label for="imageUpload" class="btn btn-sm btn-outline-primary">
                 <i class="bi bi-upload me-1"></i> Upload
-              </button>
-              <button class="btn btn-sm btn-outline-danger" *ngIf="produto.imagem" (click)="removerImagem()">
+              </label>
+              <button class="btn btn-sm btn-outline-danger" *ngIf="produto.imagem" 
+                      (click)="removerImagem()" aria-label="Remover imagem">
                 <i class="bi bi-trash me-1"></i> Remover
               </button>
             </div>
@@ -121,26 +134,28 @@
     </div>
   </div>
 
-  <!-- Modal para editar/adicionar preço -->
-  <div class="modal fade" id="priceModal" tabindex="-1" aria-labelledby="exampleModalLabel">
+  <!-- Modal de preço -->
+  <div class="modal fade" id="priceModal" tabindex="-1" aria-labelledby="priceModalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">
+          <h3 class="modal-title h5" id="priceModalLabel">
             {{ modoEdicaoPreco ? 'Editar Preço' : 'Adicionar Preço' }}
-          </h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="limparFormularioPreco()"></button>
+          </h3>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" 
+                  aria-label="Fechar modal" (click)="limparFormularioPreco()"></button>
         </div>
         <div class="modal-body">
           <form>
             <div class="mb-3">
               <label for="loja" class="form-label">Loja</label>
-              <select id="loja" class="form-select" [(ngModel)]="novoPreco.idloja" name="idloja" required>
+              <select id="loja" class="form-select" [(ngModel)]="novoPreco.idloja" 
+                      name="idloja" required aria-label="Selecione a loja">
                 <option *ngFor="let loja of lojasDisponiveis" [ngValue]="loja.id">
                   {{ loja.descricao }}
                 </option>
                 <option *ngIf="lojasDisponiveis.length === 0" disabled>
-                  Sem lojas disponiveis
+                  Sem lojas disponíveis
                 </option>
               </select>
             </div>
@@ -148,17 +163,20 @@
               <label for="precoVenda" class="form-label">Preço Venda</label>
               <div class="input-group">
                 <span class="input-group-text">R$</span>
-                <input type="number" step="0.01" id="precoVenda" class="form-control" [(ngModel)]="novoPreco.precovenda"
-                  name="precovenda" required />
+                <input type="number" step="0.01" id="precoVenda" class="form-control" 
+                       [(ngModel)]="novoPreco.precovenda" name="precovenda" required
+                       aria-label="Preço de venda" />
               </div>
             </div>
           </form>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="limparFormularioPreco()">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" 
+                  (click)="limparFormularioPreco()" aria-label="Cancelar edição">
             Fechar
           </button>
-          <button type="button" class="btn btn-primary" (click)="salvarPreco()" data-bs-dismiss="modal">
+          <button type="button" class="btn btn-primary" (click)="salvarPreco()" 
+                  data-bs-dismiss="modal" aria-label="Salvar preço">
             {{ modoEdicaoPreco ? 'Atualizar' : 'Salvar' }}
           </button>
         </div>
@@ -166,36 +184,42 @@
     </div>
   </div>
 
-<!-- Modal de Confirmação de Exclusão -->
-<div *ngIf="confirmacaoExclusaoVisivel" class="modal fade show" tabindex="-1" style="display: block"
-aria-labelledby="confirmacaoExclusaoModalLabel" aria-modal="true" role="dialog">
-<div class="modal-dialog">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h5 class="modal-title" id="confirmacaoExclusaoModalLabel">
-        Confirmar Exclusão
-      </h5>
-      <button type="button" class="btn-close" aria-label="Close" (click)="cancelarExclusao()"></button>
-    </div>
-    <div class="modal-body">
-      {{ mensagemConfirmacao }}
-    </div>
-    <div class="modal-footer">
-      <button type="button" class="btn btn-secondary" (click)="cancelarExclusao()">
-        Cancelar
-      </button>
-      <button type="button" class="btn btn-danger" (click)="confirmarExclusao()" cdkFocusInitial>
-        Excluir
-      </button>
+  <!-- Modal de confirmação de exclusão -->
+  <div *ngIf="confirmacaoExclusaoVisivel" class="modal fade show d-block" tabindex="-1" 
+       aria-labelledby="confirmacaoExclusaoModalLabel" aria-modal="true" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 class="modal-title h5" id="confirmacaoExclusaoModalLabel">
+            Confirmar Exclusão
+          </h3>
+          <button type="button" class="btn-close" aria-label="Fechar" 
+                  (click)="cancelarExclusao()"></button>
+        </div>
+        <div class="modal-body">
+          <p>{{ mensagemConfirmacao }}</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" 
+                  (click)="cancelarExclusao()" aria-label="Cancelar exclusão">
+            Cancelar
+          </button>
+          <button type="button" class="btn btn-danger" 
+                  (click)="confirmarExclusao()" cdkFocusInitial aria-label="Confirmar exclusão">
+            Excluir
+          </button>
+        </div>
+      </div>
     </div>
   </div>
-</div>
-</div>
+
+  <!-- Toast de notificação -->
   <div *ngIf="avisoMensagem" class="toast-container position-fixed bottom-0 end-0 p-3">
     <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
       <div class="toast-header">
         <strong class="me-auto">Aviso</strong>
-        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="toast" 
+                aria-label="Fechar notificação"></button>
       </div>
       <div class="toast-body">
         {{ avisoMensagem }}

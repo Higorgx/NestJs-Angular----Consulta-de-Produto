@@ -3,6 +3,7 @@ import {
   NotFoundException,
   BadRequestException,
   InternalServerErrorException,
+  Logger,
   //Logger,
 } from '@nestjs/common';
 import { RequestProdutoDto } from './dto/request-produto.dto';
@@ -89,10 +90,27 @@ export class ProdutosService {
       custoMax?: number;
       vendaMin?: number;
       vendaMax?: number;
+      orderBy?: string;
+      orderDirection?: 'ASC' | 'DESC';
     },
   ): Promise<PaginatedResponseDto<ResponseProdutoDTO>> {
     try {
       const { limit = 10, page = 1 } = paginationDto || {};
+      Logger.log(paginationDto);
+      filters = {
+        id: paginationDto?.id,
+        descricao: paginationDto?.descricao,
+        custoMin: paginationDto?.custoMin,
+        custoMax: paginationDto?.custoMax,
+        vendaMin: paginationDto?.vendaMin,
+        vendaMax: paginationDto?.vendaMax,
+        orderBy: paginationDto?.orderBy,
+        orderDirection: paginationDto?.orderDirection?.toUpperCase() as
+          | 'ASC'
+          | 'DESC'
+          | undefined,
+      };
+
       const paginatedResult = await this.produtosRepository.findAllPaginated(
         page,
         limit,

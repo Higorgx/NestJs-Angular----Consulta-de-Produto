@@ -10,3 +10,65 @@
   .form-control, .form-select {
     max-width: 100%;
   }
+  /* Estilos para os cabeçalhos ordenáveis */
+.sortable-header {
+  cursor: pointer;
+  position: relative;
+  user-select: none;
+}
+
+.sortable-header:hover {
+  background-color: rgba(0, 0, 0, 0.03);
+}
+
+/* Ícones de ordenação */
+.bi-arrow-up, .bi-arrow-down {
+  color: #0d6efd; /* Cor azul do Bootstrap para indicar ordenação ativa */
+  font-size: 0.9rem;
+}
+
+.bi-arrow-down-up {
+  color: #6c757d; /* Cor cinza para ordenação inativa */
+  font-size: 0.9rem;
+  opacity: 0.5;
+}
+
+/* Melhorias na tabela */
+.table-hover tbody tr:hover {
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+/* Ajustes para mobile */
+@media (max-width: 768px) {
+  .table-responsive {
+    border: 0;
+  }
+  
+  .table thead {
+    display: none;
+  }
+  
+  .table tr {
+    display: block;
+    margin-bottom: 1rem;
+    border: 1px solid #dee2e6;
+    border-radius: 0.25rem;
+  }
+  
+  .table td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #dee2e6;
+  }
+  
+  .table td:before {
+    content: attr(data-label);
+    font-weight: bold;
+    margin-right: 1rem;
+  }
+  
+  .table td:last-child {
+    border-bottom: 0;
+  }
+}

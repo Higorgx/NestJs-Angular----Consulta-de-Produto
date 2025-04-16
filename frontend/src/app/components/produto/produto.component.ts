@@ -34,6 +34,11 @@ export class ProdutoComponent implements OnInit {
     direcaoOrdenacao: 'asc' as 'asc' | 'desc'
   };
 
+  colunaOrdenacao = {
+    campo: 'id' as 'id' | 'descricao' | 'custo',
+    direcao: 'asc' as 'asc' | 'desc'
+  };
+
   custoFiltro: number | null = null;
   vendaFiltro: number | null = null;
 
@@ -48,6 +53,10 @@ export class ProdutoComponent implements OnInit {
 
   ngOnInit(): void {
     this.carregarProdutos();
+  }
+
+  navegarParaHome(): void {
+    this.router.navigate(['/']).catch(err => console.error('Erro na navegação:', err));
   }
 
   carregarProdutos(): void {
@@ -68,6 +77,9 @@ export class ProdutoComponent implements OnInit {
       this.filtros.vendaMinimo = null;
       this.filtros.vendaMaximo = null;
     }
+
+    this.filtros.ordenarPor = this.colunaOrdenacao.campo;
+    this.filtros.direcaoOrdenacao = this.colunaOrdenacao.direcao;
 
     const params = {
       ...this.filtros,
@@ -96,6 +108,24 @@ export class ProdutoComponent implements OnInit {
       });
   }
 
+  ordenarPor(campo: 'id' | 'descricao' | 'custo'): void {
+    console.log(campo)
+    if (this.colunaOrdenacao.campo === campo) {
+      this.colunaOrdenacao.direcao = this.colunaOrdenacao.direcao === 'asc' ? 'desc' : 'asc';
+    } else {
+      this.colunaOrdenacao.campo = campo;
+      this.colunaOrdenacao.direcao = 'asc';
+    }
+    this.carregarProdutos();
+  }
+
+  obterIconeOrdenacao(campo: string): string {
+    if (this.colunaOrdenacao.campo !== campo) {
+      return 'bi-arrow-down-up';
+    }
+    return this.colunaOrdenacao.direcao === 'asc' ? 'bi-arrow-up' : 'bi-arrow-down';
+  }
+
   aplicarFiltros(): void {
     this.filtros.pagina = 1;
     this.carregarProdutos();
@@ -113,6 +143,10 @@ export class ProdutoComponent implements OnInit {
       pagina: 1,
       ordenarPor: 'id',
       direcaoOrdenacao: 'asc'
+    };
+    this.colunaOrdenacao = {
+      campo: 'id',
+      direcao: 'asc'
     };
     this.custoFiltro = null;
     this.vendaFiltro = null;
