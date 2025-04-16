@@ -1,15 +1,19 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cadastro de Produto</title>
-</head>
-<body>
+
   <div class="container-fluid p-0">
     <nav class="navbar navbar-dark bg-primary shadow-sm">
       <div class="container-fluid position-relative">
-        <h5 class="nav-title text-white mb-0" onclick="window.location.href='/'">Cadastro de Produto</h5>
+        <h5 class="nav-title text-white mb-0" onclick="window.location.href='/'">
+          Cadastro de Produto
+        </h5>
+        <div class="d-flex gap-3">
+          <button class="btn btn-success rounded-circle" title="Salvar" (click)="salvar()">
+            <i class="bi bi-save"></i>
+          </button>
+          <button class="btn btn-danger rounded-circle" title="Excluir"
+            (click)="abrirConfirmacaoExclusao('produto', 'produto')">
+            <i class="bi bi-trash"></i>
+          </button>
+        </div>
       </div>
     </nav>
 
@@ -22,17 +26,19 @@
                 <div class="row g-3">
                   <div class="col-md-4 col-6">
                     <label for="codigo" class="form-label small text-uppercase fw-bold">Código</label>
-                    <input type="text" class="form-control input-line" id="codigo" [value]="produto.id" readonly>
+                    <input type="text" class="form-control input-line" id="codigo" [value]="produto.id" disabled />
                   </div>
                   <div class="col-md-4 col-6">
                     <label for="descricao" class="form-label small text-uppercase fw-bold">Descrição</label>
-                    <input type="text" class="form-control input-line" id="descricao" [(ngModel)]="produto.descricao" name="descricao" placeholder="______">
+                    <input type="text" class="form-control input-line" id="descricao" [(ngModel)]="produto.descricao"
+                      name="descricao" placeholder="______" />
                   </div>
                   <div class="col-md-4 col-6">
                     <label for="custo" class="form-label small text-uppercase fw-bold">Custo</label>
                     <div class="input-group">
                       <span class="input-group-text">R$</span>
-                      <input type="number" step="0.01" class="form-control input-line" id="custo" [(ngModel)]="produto.custo" name="custo" placeholder="______">
+                      <input type="number" step="0.01" class="form-control input-line" id="custo"
+                        [(ngModel)]="produto.custo" name="custo" placeholder="______" />
                     </div>
                   </div>
                 </div>
@@ -44,11 +50,9 @@
             <div class="card-body p-0">
               <div class="d-flex justify-content-between align-items-center p-3">
                 <h5 class="mb-0">Preços</h5>
-                <button class="btn btn-primary rounded-circle p-0 d-flex align-items-center justify-content-center" 
-                        style="width: 36px; height: 36px;" 
-                        title="Adicionar Preço" 
-                        data-bs-toggle="modal" 
-                        data-bs-target="#priceModal">
+                <button class="btn btn-primary rounded-circle p-0 d-flex align-items-center justify-content-center"
+                  style="width: 36px; height: 36px" title="Adicionar Preço" data-bs-toggle="modal"
+                  data-bs-target="#priceModal" *ngIf="produto.id">
                   <i class="bi bi-plus-lg"></i>
                 </button>
               </div>
@@ -65,19 +69,21 @@
                   <tbody>
                     <tr *ngFor="let preco of produto.produtoLoja">
                       <td>{{ preco.idloja.descricao }}</td>
-                      <td class="text-end">{{ preco.precovenda | currency:'BRL' }}</td>
+                      <td class="text-end">
+                        {{ preco.precovenda | currency : "BRL" }}
+                      </td>
                       <td class="text-end">
                         <div class="d-flex justify-content-end gap-2">
-                          <button class="btn btn-warning text-white rounded-circle p-0 d-flex align-items-center justify-content-center" 
-                                  style="width: 30px; height: 30px;" 
-                                  title="Editar"
-                                  data-bs-toggle="modal" 
-                                  data-bs-target="#priceModal">
+                          <button
+                            class="btn btn-warning text-white rounded-circle p-0 d-flex align-items-center justify-content-center"
+                            style="width: 30px; height: 30px" title="Editar" data-bs-toggle="modal"
+                            data-bs-target="#priceModal">
                             <i class="bi bi-pencil"></i>
                           </button>
-                          <button class="btn btn-danger rounded-circle p-0 d-flex align-items-center justify-content-center" 
-                                  style="width: 30px; height: 30px;" 
-                                  title="Excluir">
+                          <button
+                            class="btn btn-danger rounded-circle p-0 d-flex align-items-center justify-content-center"
+                            style="width: 30px; height: 30px" title="Excluir"
+                            (click)="abrirConfirmacaoExclusao(preco, 'preco')">
                             <i class="bi bi-trash"></i>
                           </button>
                         </div>
@@ -94,15 +100,19 @@
           <div class="card shadow-sm h-100">
             <div class="card-body d-flex flex-column">
               <h5 class="mb-3">Imagem do Produto</h5>
-              <div class="d-flex flex-column align-items-center justify-content-center flex-grow-1 mb-3 bg-light rounded">
-                <span class="text-muted">Sem imagem</span>
+              <div
+                class="d-flex flex-column align-items-center justify-content-center flex-grow-1 mb-3 bg-light rounded">
+                <img *ngIf="produto.imagem" [src]="'data:image/jpeg;base64,' + produto.imagem" alt="Imagem do Produto"
+                  class="img-fluid rounded" />
+                <span *ngIf="!produto.imagem" class="text-muted">Sem imagem</span>
               </div>
               <div class="d-grid gap-2">
-                <input type="file" id="imageUpload" class="d-none" accept="image/*">
+                <input type="file" id="imageUpload" class="d-none" accept=".jpg,.jpeg,.png"
+                  (change)="onImageSelected($event)" />
                 <button class="btn btn-sm btn-outline-primary" onclick="document.getElementById('imageUpload').click()">
                   <i class="bi bi-upload me-1"></i> Upload
                 </button>
-                <button class="btn btn-sm btn-outline-danger" disabled>
+                <button class="btn btn-sm btn-outline-danger" *ngIf="produto.imagem" (click)="removerImagem()">
                   <i class="bi bi-trash me-1"></i> Remover
                 </button>
               </div>
@@ -113,37 +123,82 @@
     </div>
   </div>
 
-  <!-- Modal de Preço (permanece igual) -->
-  <div class="modal fade" id="priceModal" tabindex="-1" aria-labelledby="priceModalLabel" aria-hidden="true">
+  <!-- Modal para editar preço -->
+  <div class="modal fade" id="priceModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="priceModalLabel">Adicionar/Editar Preço</h5>
+          <h5 class="modal-title" id="exampleModalLabel">Adicionar Preço</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
           <form>
             <div class="mb-3">
               <label for="loja" class="form-label">Loja</label>
-              <select class="form-select" id="loja">
-                <option *ngFor="let loja of produto.produtoLoja" [value]="loja.idloja.id">{{ loja.idloja.descricao }}</option>
+              <select id="loja" class="form-select" [(ngModel)]="novoPreco.idloja" name="idloja" required>
+                <option *ngFor="let loja of lojasDisponiveis" [ngValue]="loja.id">
+                  {{ loja.descricao }}
+                </option>
+                <option *ngIf="lojasDisponiveis.length === 0" disabled>
+                  Sem lojas disponiveis
+                </option>
               </select>
             </div>
             <div class="mb-3">
-              <label for="preco" class="form-label">Preço Venda (R$)</label>
+              <label for="precoVenda" class="form-label">Preço Venda</label>
               <div class="input-group">
                 <span class="input-group-text">R$</span>
-                <input type="number" step="0.01" class="form-control" id="preco" placeholder="0,00">
+                <input type="number" step="0.01" id="precoVenda" class="form-control" [(ngModel)]="novoPreco.precovenda"
+                  name="precovenda" required />
               </div>
-            </div>
-          </form>
+        </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Fechar
+        </button>
+        <button type="button" class="btn btn-primary" (click)="salvarPreco()" data-bs-dismiss="modal">
+          Salvar
+        </button>
+      </div>
+    </div>
+  </div>
+  </div>
+
+  <!-- Modal de Confirmação de Exclusão -->
+  <div *ngIf="confirmacaoExclusaoVisivel" class="modal fade show" tabindex="-1" style="display: block"
+    aria-labelledby="confirmacaoExclusaoModalLabel" aria-hidden="false">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="confirmacaoExclusaoModalLabel">
+            Confirmar Exclusão
+          </h5>
+          <button type="button" class="btn-close" aria-label="Close" (click)="cancelarExclusao()"></button>
+        </div>
+        <div class="modal-body">
+          {{ mensagemConfirmacao }}
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-          <button type="button" class="btn btn-primary">Salvar</button>
+          <button type="button" class="btn btn-secondary" (click)="cancelarExclusao()">
+            Cancelar
+          </button>
+          <button type="button" class="btn btn-danger" (click)="confirmarExclusao()">
+            Excluir
+          </button>
         </div>
       </div>
     </div>
   </div>
-</body>
-</html>
+  <div *ngIf="avisoMensagem" class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="toast-header">
+        <strong class="me-auto">Aviso</strong>
+        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+      <div class="toast-body">
+        {{ avisoMensagem }}
+      </div>
+    </div>
+  </div>

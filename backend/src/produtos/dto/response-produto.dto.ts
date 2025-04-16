@@ -18,6 +18,7 @@ class LojaResponseDto {
 class ProdutoLojaResponseDto {
   @ApiProperty() id: number;
   @ApiProperty() idproduto: number;
+  @ApiProperty() imagem?: string;
   @ApiProperty() idloja: number;
   @ApiProperty() precovenda: number;
   @ApiPropertyOptional({ type: LojaResponseDto }) loja?: LojaResponseDto;

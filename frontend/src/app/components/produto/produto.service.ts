@@ -33,12 +33,12 @@ export class ProdutoService {
     return this.http.get<ProdutoResponse>(`${this.apiUrl}/${id}`);
   }
 
-  criarProduto(produto: Produto): Observable<Produto> {
+  criarProduto(produto: Produto) {
     return this.http.post<Produto>(this.apiUrl, produto);
   }
 
-  atualizarProduto(id: number, produto: Produto): Observable<Produto> {
-    return this.http.put<Produto>(`${this.apiUrl}/${id}`, produto);
+  atualizarProdutoParcial(id: number, dadosParciais: Partial<Produto>): Observable<any> {
+    return this.http.patch(`${this.apiUrl}/${id}`, dadosParciais);
   }
 
   excluirProduto(id: number): Observable<void> {
