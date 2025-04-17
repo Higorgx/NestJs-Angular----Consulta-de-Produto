@@ -10,7 +10,7 @@
           <i class="bi bi-save"></i>
         </button>
         <button class="btn btn-danger rounded-circle" title="Excluir" 
-                (click)="abrirConfirmacaoExclusao('produto', 'produto')" aria-label="Excluir produto">
+                (click)="abrirConfirmacaoExclusao('produto', 'produto')"*ngIf="produto.id" aria-label="Excluir produto">
           <i class="bi bi-trash"></i>
         </button>
       </div>
@@ -44,9 +44,13 @@
                   <label for="custo" class="form-label small text-uppercase fw-bold">Custo</label>
                   <div class="input-group">
                     <span class="input-group-text">R$</span>
-                    <input type="number" step="0.01" class="form-control input-line" id="custo"
+                    <input type="text" step="0.01" class="form-control input-line" id="custo"
                            [(ngModel)]="produto.custo" name="custo" 
-                           placeholder="______" aria-label="Custo do produto" />
+                           placeholder="______" aria-label="Custo do produto" 
+                           inputmode="decimal" 
+                           (input)="validateFloat($event)"/>
+
+                      
                   </div>
                 </div>
               </div>
@@ -163,9 +167,14 @@
               <label for="precoVenda" class="form-label">Preço Venda</label>
               <div class="input-group">
                 <span class="input-group-text">R$</span>
-                <input type="number" step="0.01" id="precoVenda" class="form-control" 
-                       [(ngModel)]="novoPreco.precovenda" name="precovenda" required
-                       aria-label="Preço de venda" />
+                <input type="text"  
+                  inputmode="decimal" 
+                  id="precoVenda" 
+                  class="form-control" 
+                  [(ngModel)]="novoPreco.precovenda"
+                  name="precovenda"
+                  (input)="validateFloat($event)"
+                  aria-label="Preço de venda" />
               </div>
             </div>
           </form>

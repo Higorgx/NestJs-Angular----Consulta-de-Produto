@@ -7,7 +7,6 @@ import {
   Param,
   Delete,
   Query,
-  Logger,
 } from '@nestjs/common';
 import { ProdutosService } from './produtos.service';
 import { RequestProdutoDto } from './dto/request-produto.dto';
@@ -83,7 +82,6 @@ export class ProdutosController {
     },
   })
   async findAll(@Query() paginationDto: PaginationProdutoDto) {
-    Logger.log('controller', paginationDto);
     return this.produtosService.findAll(paginationDto);
   }
 

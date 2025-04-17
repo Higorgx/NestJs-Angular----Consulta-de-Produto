@@ -37,9 +37,9 @@ export class CadastroComponent implements OnInit {
   tipoExclusao: 'produto' | 'preco' | null = null;
 
   novoPreco = {
-    idproduto: null,
-    idloja: null,
-    precovenda: 0,
+    idproduto: null as number | null,
+    idloja: null as number | null,
+    precovenda: null as number | null, 
   };
 
   constructor(
@@ -58,18 +58,38 @@ export class CadastroComponent implements OnInit {
     const id = this.route.snapshot.params['id'];
     if (id) this.carregarProduto(+id);
     this.carregarLojasDisponiveis();
+    
   }
 
   // ========== Carregamento de Dados ==========
   carregarProduto(id: number): void {
     this.carregando = true;
     this.avisoMensagem = null;
-
+  
     this.produtoService.obterProdutoPorId(id).subscribe({
       next: (res) => {
         if (res.success) {
           this.produto = res.data;
           this.isEdicao = true;
+  
+          // Formatação específica para remover apenas o último zero decimal
+          if (this.produto.produtoLoja) {
+            this.produto.produtoLoja.forEach(item => {
+              if (item.precovenda) {
+                // Converte para string e processa
+                let valorStr = item.precovenda.toString();
+                
+                // Se tiver ponto decimal e terminar com zero
+                if (valorStr.includes('.') && valorStr.endsWith('0')) {
+                  valorStr = valorStr.slice(0, -1); // Remove o último caractere (zero)
+                }
+                
+                item.precovenda = valorStr;
+              }
+            });
+          }
+  
+          console.log('Produto formatado:', this.produto);
         } else {
           this.avisoMensagem = 'Produto não encontrado';
         }
@@ -79,7 +99,7 @@ export class CadastroComponent implements OnInit {
         console.error('Erro ao carregar produto', err);
         this.avisoMensagem = 'Erro ao carregar os dados do produto';
         this.carregando = false;
-      },
+      }
     });
   }
 
@@ -169,6 +189,49 @@ export class CadastroComponent implements OnInit {
     this.router.navigate(['/produtos']);
   }
 
+  validateFloat(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const cursorPosition = input.selectionStart ?? 0;
+    
+    let value = input.value;
+    const originalLength = value.length;
+  
+ 
+    value = value.replace(/[^0-9.]/g, '');
+  
+    const decimalParts = value.split('.');
+    if (decimalParts.length > 2) {
+      value = decimalParts[0] + '.' + decimalParts.slice(1).join('');
+    }
+  
+    if (decimalParts.length > 1) {
+      value = decimalParts[0] + '.' + decimalParts[1].slice(0, 2); 
+    }
+  
+    const numStr = value.replace('.', '');
+    if (numStr.length > 7) {
+      value = value.substring(0, value.length - (numStr.length - 7));
+    }
+  
+    if (input.value !== value) {
+      input.value = value;
+      this.novoPreco.precovenda = value === '' ? null : parseFloat(value);
+      
+      let newCursorPosition = cursorPosition;
+      const lengthDiff = value.length - originalLength;
+      
+      newCursorPosition += lengthDiff;
+      
+      newCursorPosition = Math.max(0, Math.min(newCursorPosition, value.length));
+      
+      if (value.includes('.') && newCursorPosition > value.indexOf('.')) {
+        newCursorPosition = Math.min(newCursorPosition, value.indexOf('.') + 2); 
+      }
+      
+      input.setSelectionRange(newCursorPosition, newCursorPosition);
+    }
+  }
+
   // ========== Manipulação de Imagem ==========
   onImageSelected(event: Event): void {
     const fileInput = event.target as HTMLInputElement;
@@ -203,7 +266,7 @@ export class CadastroComponent implements OnInit {
       return;
     }
 
-    if (this.novoPreco.precovenda <= 0) {
+    if (this.novoPreco.precovenda && this.novoPreco.precovenda <= 0) {
       this.avisoMensagem = 'O preço de venda deve ser maior que 0.';
       return;
     }
