@@ -16,7 +16,7 @@ export class ProdutoLojaRepository {
     return await this.repository.save(produtoLoja);
   }
 
-  async findById(id: number): Promise<ProdutoLoja | null> {
+  async findOne(id: number): Promise<ProdutoLoja | null> {
     return this.repository.findOneBy({ id });
   }
 
@@ -62,7 +62,7 @@ export class ProdutoLojaRepository {
     updateData: Partial<ProdutoLoja>,
   ): Promise<ProdutoLoja | null> {
     await this.repository.update(id, updateData);
-    return this.findById(id);
+    return this.findOne(id);
   }
 
   async delete(id: number): Promise<void> {

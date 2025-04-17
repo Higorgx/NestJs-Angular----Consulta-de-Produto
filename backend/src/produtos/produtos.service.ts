@@ -129,7 +129,7 @@ export class ProdutosService {
 
   async findOne(id: number): Promise<BaseResponseDto<ResponseProdutoDTO>> {
     try {
-      const produto = await this.produtosRepository.findById(id);
+      const produto = await this.produtosRepository.findOne(id);
       if (!produto) {
         throw new NotFoundException('Produto não encontrado');
       }
@@ -164,14 +164,14 @@ export class ProdutosService {
         imagem: imagem ? this.base64ToBuffer(imagem) : undefined,
       };
 
-      const produtoExistente = await this.produtosRepository.findById(id);
+      const produtoExistente = await this.produtosRepository.findOne(id);
 
       if (!produtoExistente) {
         throw new NotFoundException(`Produto com ID ${id} não encontrado`);
       }
 
       await this.produtosRepository.update(id, produtoData);
-      const produtoAtualizado = await this.produtosRepository.findById(id);
+      const produtoAtualizado = await this.produtosRepository.findOne(id);
 
       if (!produtoAtualizado) {
         throw new NotFoundException('Produto não encontrado para atualização');
@@ -184,7 +184,7 @@ export class ProdutosService {
       });
     } catch (error) {
       if (error instanceof NotFoundException) {
-        throw error; // Retorna a exceção já lançada
+        throw error; 
       }
       throw new InternalServerErrorException(this.getErrorMessage(error));
     }
@@ -192,10 +192,17 @@ export class ProdutosService {
 
   async remove(id: number): Promise<BaseResponseDto<void>> {
     try {
-      const produto = await this.produtosRepository.findById(id);
+      const produto = await this.produtosRepository.findOne(id);
 
       if (!produto) {
         throw new NotFoundException('Produto não encontrado');
+      }
+
+      
+      if (produto.produtoLoja && produto.produtoLoja.length > 0) {
+        throw new BadRequestException(
+          'Remova os preços associados ao produto antes de excluí-lo.',
+        );
       }
 
       await this.produtosRepository.delete(id);
@@ -206,7 +213,7 @@ export class ProdutosService {
       });
     } catch (error) {
       if (error instanceof NotFoundException) {
-        throw error;
+        throw error; 
       }
       throw new InternalServerErrorException(this.getErrorMessage(error));
     }

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { RequestLojaDto } from './dto/request-loja.dto';
 import { PaginationLojaDto } from './dto/pagination-loja.dto';
 import { LojasRepository } from './lojas.repository';
@@ -40,11 +40,9 @@ export class LojasService {
         message: 'Loja criada com sucesso',
       });
     } catch (error) {
-      return new BaseResponseDto<ResponseLojaDto>({
-        success: false,
-        message: 'Erro ao criar loja',
-        errors: [this.getErrorMessage(error)],
-      });
+      throw new BadRequestException(
+        'Erro ao criar loja: ' + this.getErrorMessage(error),
+      );
     }
   }
 
@@ -69,37 +67,31 @@ export class LojasService {
         success: true,
         data: data.map((loja) => this.toResponseDto(loja)),
         total,
+        message: 'Lojas encontradas com sucesso',
         page: currentPage,
         lastPage,
       });
     } catch (error) {
-      return new PaginatedResponseDto<ResponseLojaDto>({
-        success: false,
-        message: 'Erro ao buscar lojas',
-        errors: [this.getErrorMessage(error)],
-      });
+      throw new BadRequestException(
+        'Erro ao buscar lojas: ' + this.getErrorMessage(error),
+      );
     }
   }
 
   async findOne(id: number): Promise<BaseResponseDto<ResponseLojaDto>> {
     try {
-      const loja = await this.lojasRepository.findById(id);
+      const loja = await this.lojasRepository.findOne(id);
       if (!loja) {
-        return new BaseResponseDto<ResponseLojaDto>({
-          success: false,
-          message: 'Loja não encontrada',
-        });
+        throw new BadRequestException('Loja não encontrada');
       }
       return new BaseResponseDto<ResponseLojaDto>({
         success: true,
         data: this.toResponseDto(loja),
       });
     } catch (error) {
-      return new BaseResponseDto<ResponseLojaDto>({
-        success: false,
-        message: 'Erro ao buscar loja',
-        errors: [this.getErrorMessage(error)],
-      });
+      throw new BadRequestException(
+        'Erro ao buscar loja: ' + this.getErrorMessage(error),
+      );
     }
   }
 
@@ -110,10 +102,7 @@ export class LojasService {
     try {
       const loja = await this.lojasRepository.update(id, updateLojaDto);
       if (!loja) {
-        return new BaseResponseDto<ResponseLojaDto>({
-          success: false,
-          message: 'Loja não encontrada',
-        });
+        throw new BadRequestException('Loja não encontrada');
       }
 
       return new BaseResponseDto<ResponseLojaDto>({
@@ -122,27 +111,35 @@ export class LojasService {
         message: 'Loja atualizada com sucesso',
       });
     } catch (error) {
-      return new BaseResponseDto<ResponseLojaDto>({
-        success: false,
-        message: 'Erro ao atualizar loja',
-        errors: [this.getErrorMessage(error)],
-      });
+      throw new BadRequestException(
+        'Erro ao atualizar loja: ' + this.getErrorMessage(error),
+      );
     }
   }
-
   async remove(id: number): Promise<BaseResponseDto<void>> {
     try {
+      const loja = await this.lojasRepository.findOne(id);
+
+      if (!loja) {
+        throw new BadRequestException('Loja não encontrada');
+      }
+
+      if (loja.produtosLoja && loja.produtosLoja.length > 0) {
+        throw new BadRequestException(
+          'Remova os preços associados à loja antes de excluí-la.',
+        );
+      }
+
       await this.lojasRepository.delete(id);
+
       return new BaseResponseDto<void>({
         success: true,
         message: 'Loja removida com sucesso',
       });
     } catch (error) {
-      return new BaseResponseDto<void>({
-        success: false,
-        message: 'Erro ao remover loja',
-        errors: [this.getErrorMessage(error)],
-      });
+      throw new BadRequestException(
+        'Erro ao remover loja: ' + this.getErrorMessage(error),
+      );
     }
   }
 }

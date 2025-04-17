@@ -16,8 +16,12 @@ export class LojasRepository {
     return await this.repository.save(loja);
   }
 
-  async findById(id: number): Promise<Loja | null> {
-    return this.repository.findOneBy({ id });
+  findOne(id: number): Promise<Loja | null> {
+    return this.repository
+      .createQueryBuilder('loja')
+      .leftJoinAndSelect('loja.produtosLoja', 'produtoLoja')
+      .where('loja.id = :id', { id })
+      .getOne();
   }
 
   async findAllPaginated(
@@ -57,7 +61,7 @@ export class LojasRepository {
 
   async update(id: number, updateData: Partial<Loja>): Promise<Loja | null> {
     await this.repository.update(id, updateData);
-    return this.findById(id);
+    return this.findOne(id);
   }
 
   async delete(id: number): Promise<void> {

@@ -43,12 +43,12 @@ export interface RespostaProduto {
   
   export interface Produto {
     data: any;
-    //data: any;
+    
     id: number | null;
     descricao: string | null;
     imagem: string|null|undefined;
     custo: string;
-    produtoLoja: ProdutoLoja[]; // Array de objetos produtoLoja
+    produtoLoja: ProdutoLoja[]; 
   }
   
   export interface ProdutoResponse {

@@ -16,11 +16,11 @@ export class ProdutosRepository {
     return await this.repository.save(produto);
   }
 
-  async findById(id: number): Promise<Produto | null> {
+  async findOne(id: number): Promise<Produto | null> {
     const query = this.repository
       .createQueryBuilder('produto')
       .leftJoinAndSelect('produto.produtoLoja', 'produtoLoja')
-      .leftJoin('produtoLoja.idloja', 'loja')
+      .leftJoinAndSelect('produtoLoja.idloja', 'loja')
       .addSelect(['loja.id', 'loja.descricao'])
       .andWhere('produto.id = :id', { id: id });
 
@@ -51,11 +51,10 @@ export class ProdutosRepository {
       .leftJoin('produtoLoja.idloja', 'loja')
       .addSelect(['loja.id', 'loja.descricao']);
 
-    // Add ordering if orderBy is provided
     if (filters?.orderBy) {
       query.orderBy(
         `produto.${filters.orderBy}`,
-        filters.orderDirection || 'ASC', // Default to ASC if orderDirection is not provided
+        filters.orderDirection || 'ASC',
       );
     }
 
@@ -110,7 +109,7 @@ export class ProdutosRepository {
     updateData: Partial<Produto>,
   ): Promise<Produto | null> {
     await this.repository.update(id, updateData);
-    return this.findById(id);
+    return this.findOne(id);
   }
 
   async delete(id: number): Promise<void> {

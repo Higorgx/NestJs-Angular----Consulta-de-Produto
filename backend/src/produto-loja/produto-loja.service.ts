@@ -108,7 +108,7 @@ export class produtoLojaservice {
 
   async findOne(id: number): Promise<BaseResponseDto<ResponseProdutoLojaDto>> {
     try {
-      const entity = await this.repository.findById(id);
+      const entity = await this.repository.findOne(id);
       if (!entity) {
         return new BaseResponseDto({
           success: false,

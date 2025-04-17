@@ -2,7 +2,7 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Produto } from '../entities/produto.entity';
 import { ProdutoLoja } from '../../produto-loja/entities/produto-loja.entity';
 
-// Interface para o objeto de relação que o TypeORM injeta
+
 interface ProdutoLojaComRelacao extends ProdutoLoja {
   loja?: {
     id: number;
@@ -17,8 +17,6 @@ class LojaResponseDto {
 
 class ProdutoLojaResponseDto {
   @ApiProperty() id: number;
-  @ApiProperty() idproduto: number;
-  @ApiProperty() imagem?: string;
   @ApiProperty() idloja: number;
   @ApiProperty() precovenda: number;
   @ApiPropertyOptional({ type: LojaResponseDto }) loja?: LojaResponseDto;
@@ -42,12 +40,10 @@ export class ResponseProdutoDTO {
       produto.produtoLoja?.map((pl: ProdutoLojaComRelacao) => {
         const item: ProdutoLojaResponseDto = {
           id: pl.id,
-          idproduto: pl.idproduto,
-          idloja: pl.idloja, // Usando o campo idloja direto da entidade
+          idloja: pl.idloja, 
           precovenda: pl.precovenda,
         };
 
-        // Acesso seguro à relação carregada (se existir)
         if (pl['loja']) {
           item.loja = {
             id: pl['loja'].id,

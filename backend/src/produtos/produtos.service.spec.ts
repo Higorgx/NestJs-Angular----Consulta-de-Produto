@@ -11,7 +11,7 @@ const mockProdutosRepository = {
   findOne: jest.fn(),
   update: jest.fn(),
   remove: jest.fn(),
-  findById: jest.fn(),
+  delete: jest.fn(),
 };
 
 describe('ProdutosService', () => {
@@ -108,11 +108,9 @@ describe('ProdutosService', () => {
         produtoLoja: [],
       };
 
-      const produtoAtualizado = {
-        ...produtoExistente,
-        descricao: 'Atualizado',
-      };
       mockProdutosRepository.findOne.mockResolvedValue(produtoExistente);
+      const produtoAtualizado = produtoExistente;
+      produtoAtualizado.descricao = 'Atualizado';
       mockProdutosRepository.update.mockResolvedValue(produtoAtualizado);
 
       const result = await service.update(id, {
@@ -120,7 +118,6 @@ describe('ProdutosService', () => {
         custo: 20,
         imagem: 'data:image/png;base64,imagem',
       });
-      console.log(result);
       expect(result.success).toBe(true);
       expect(result?.data?.descricao).toBe('Atualizado');
     });
@@ -153,12 +150,11 @@ describe('ProdutosService', () => {
       };
 
       mockProdutosRepository.findOne.mockResolvedValue(produto);
-      mockProdutosRepository.remove.mockResolvedValue(undefined);
+      mockProdutosRepository.remove.mockResolvedValue(id);
 
       const result = await service.remove(id);
-
       expect(result.success).toBe(true);
-      expect(result.data).toBeNull();
+      expect(result.data).toBeUndefined();
     });
 
     it('should throw an error if product to remove not found', async () => {
@@ -166,6 +162,29 @@ describe('ProdutosService', () => {
       mockProdutosRepository.findOne.mockResolvedValue(null);
 
       await expect(service.remove(999)).rejects.toThrow(NotFoundException);
+    });
+    it('should throw an error if produto has associated prices', async () => {
+      jest.clearAllMocks();
+      const produtoComPrecos = {
+        id: 4,
+        descricao: 'Produto com preços',
+        custo: 104.84,
+        imagem: null,
+        produtoLoja: [
+          {
+            id: 1,
+            idproduto: 4,
+            idloja: { id: 2, descricao: 'Loja centro' },
+            precovenda: 1231.0,
+          },
+        ],
+      };
+
+      mockProdutosRepository.findOne.mockResolvedValue(produtoComPrecos);
+
+      await expect(service.remove(4)).rejects.toThrow(
+        'Remova os preços associados ao produto antes de excluí-lo.',
+      );
     });
   });
 });

@@ -45,7 +45,7 @@ export class ProdutoService {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 
-  // Métodos para gerenciamento de preços por loja
+  
   adicionarPrecoLoja(produtoId: number, lojaId: number, preco: number): Observable<any> {
     return this.http.post(`${this.apiUrl}/${produtoId}/lojas`, {
       lojaId,
