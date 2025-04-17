@@ -209,8 +209,8 @@ export class CadastroComponent implements OnInit {
     }
   
     const numStr = value.replace('.', '');
-    if (numStr.length > 7) {
-      value = value.substring(0, value.length - (numStr.length - 7));
+    if (numStr.length > 10) {
+      value = value.substring(0, value.length - (numStr.length - 10));
     }
   
     if (input.value !== value) {
