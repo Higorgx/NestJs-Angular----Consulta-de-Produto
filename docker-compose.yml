@@ -3,7 +3,6 @@ services:
     image: postgres
     restart: always
     environment:
-  #TODO senha porta host para o env
       POSTGRES_PASSWORD: root
       POSTGRES_DB: cadastro_produto
     container_name: postgres
@@ -20,14 +19,8 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     container_name: cadastro_produto_backend
-    environment:
-      PORT: 3000
-      DB_HOST: db
-      DB_PORT: 5432
-      DB_USERNAME: postgres
-      DB_PASSWORD: root
-      DB_DATABASE: cadastro_produto
-      NODE_ENV: development
+    env_file:
+      - .env
     ports:
       - '3000:3000'
     depends_on:

@@ -3,7 +3,6 @@ import {
   NotFoundException,
   BadRequestException,
   InternalServerErrorException,
-  Logger,
 } from '@nestjs/common';
 import { RequestProdutoDto } from './dto/request-produto.dto';
 import { PaginationProdutoDto } from './dto/pagination-produto.dto';
@@ -91,7 +90,6 @@ export class ProdutosService {
   ): Promise<PaginatedResponseDto<ResponseProdutoDTO>> {
     try {
       const { limit = 10, page = 1 } = paginationDto || {};
-      Logger.log(paginationDto);
       filters = {
         id: paginationDto?.id,
         descricao: paginationDto?.descricao,
@@ -184,7 +182,7 @@ export class ProdutosService {
       });
     } catch (error) {
       if (error instanceof NotFoundException) {
-        throw error; 
+        throw error;
       }
       throw new InternalServerErrorException(this.getErrorMessage(error));
     }
@@ -198,7 +196,6 @@ export class ProdutosService {
         throw new NotFoundException('Produto não encontrado');
       }
 
-      
       if (produto.produtoLoja && produto.produtoLoja.length > 0) {
         throw new BadRequestException(
           'Remova os preços associados ao produto antes de excluí-lo.',
@@ -213,7 +210,7 @@ export class ProdutosService {
       });
     } catch (error) {
       if (error instanceof NotFoundException) {
-        throw error; 
+        throw error;
       }
       throw new InternalServerErrorException(this.getErrorMessage(error));
     }

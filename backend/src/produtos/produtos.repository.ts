@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Produto } from './entities/produto.entity';
@@ -44,7 +44,6 @@ export class ProdutosRepository {
     },
   ): Promise<PaginationResult<Produto>> {
     const skip = (page - 1) * limit;
-    Logger.log(filters);
     const query = this.repository
       .createQueryBuilder('produto')
       .leftJoinAndSelect('produto.produtoLoja', 'produtoLoja')
