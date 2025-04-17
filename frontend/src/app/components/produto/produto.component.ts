@@ -109,7 +109,6 @@ export class ProdutoComponent implements OnInit {
   }
 
   ordenarPor(campo: 'id' | 'descricao' | 'custo'): void {
-    console.log(campo)
     if (this.colunaOrdenacao.campo === campo) {
       this.colunaOrdenacao.direcao = this.colunaOrdenacao.direcao === 'asc' ? 'desc' : 'asc';
     } else {
